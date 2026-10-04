@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lib/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/models/plant_model.dart';
 
 class PlantInfoPopup extends StatelessWidget {

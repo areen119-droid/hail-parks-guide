@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lib/core/constants/app_colors.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/providers/home_provider.dart';
 import 'package:hail_parks_guide/features/settings/screens/settings_screen.dart';
 

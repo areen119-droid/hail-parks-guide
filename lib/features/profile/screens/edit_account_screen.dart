@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/models/user_model.dart';
 import 'package:hail_parks_guide/providers/user_provider.dart';
 import 'package:hail_parks_guide/providers/auth_provider.dart' as app;
-import 'package:lib/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 
 // REMOVED: import 'package:firebase_storage/firebase_storage.dart';
 

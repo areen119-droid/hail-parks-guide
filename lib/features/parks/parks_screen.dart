@@ -1,8 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:hail_parks_guide/features/parks/park_detail_screen.dart';
-import 'package:hail_parks_guide/features/plants/plants_screen.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/models/park_model.dart';
-import 'package:hail_parks_guide/models/plant_model.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 
 class ParksScreen extends StatefulWidget {
@@ -15,6 +14,12 @@ class ParksScreen extends StatefulWidget {
 class _ParksScreenState extends State<ParksScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,45 +96,31 @@ class _ParksScreenState extends State<ParksScreen> {
   }
 
   Widget _buildParksList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('parks').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-              child: CircularProgressIndicator(color: AppColors.darkGreen));
-        }
+    final parks = HailData.parks
+        .where((park) =>
+            park.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('لا توجد حدائق بعد',
-                style: TextStyle(color: AppColors.mediumGrey)),
-          );
-        }
+    if (parks.isEmpty) {
+      return const Center(
+        child: Text('لا توجد حدائق بعد',
+            style: TextStyle(color: AppColors.mediumGrey)),
+      );
+    }
 
-        final parks = snapshot.data!.docs.where((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          final name = data['name'] ?? '';
-          return name.toLowerCase().contains(_searchQuery.toLowerCase());
-        }).toList();
-
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: parks.length,
-          itemBuilder: (context, index) {
-            final data = parks[index].data() as Map<String, dynamic>;
-            return _buildParkCard(parks[index].id, data);
-          },
-        );
-      },
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: parks.length,
+      itemBuilder: (context, index) => _buildParkCard(parks[index]),
     );
   }
 
-  Widget _buildParkCard(String id, Map<String, dynamic> data) {
+  Widget _buildParkCard(ParkModel park) {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ParkDetailScreen(parkId: id, data: data),
+          builder: (_) => ParkDetailScreen(park: park),
         ),
       ),
       child: Container(
@@ -152,12 +143,13 @@ class _ParksScreenState extends State<ParksScreen> {
               borderRadius:
               const BorderRadius.vertical(top: Radius.circular(16)),
               child: Image.network(
-                data['imageUrl'] ?? '',
+                park.imageUrl,
                 height: 160,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   height: 160,
+                  width: double.infinity,
                   color: AppColors.lightSand,
                   child: const Icon(Icons.park,
                       size: 60, color: AppColors.mediumGrey),
@@ -170,7 +162,7 @@ class _ParksScreenState extends State<ParksScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    data['name'] ?? '',
+                    park.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -179,7 +171,7 @@ class _ParksScreenState extends State<ParksScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    data['description'] ?? '',
+                    park.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.right,
@@ -194,7 +186,7 @@ class _ParksScreenState extends State<ParksScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        data['location'] ?? '',
+                        park.location,
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.mediumBrown,

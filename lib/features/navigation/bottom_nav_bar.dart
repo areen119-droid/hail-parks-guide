@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lib/core/constants/app_colors.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_config.dart';
 import 'package:hail_parks_guide/features/home/screens/home_screen.dart';
-import 'package:hail_parks_guide/features/parks/screens/parks_screen.dart';
-import 'package:hail_parks_guide/features/plants/screens/plants_screen.dart';
-import 'package:hail_parks_guide/features/map/screens/map_screen.dart';
+import 'package:hail_parks_guide/features/parks/parks_screen.dart';
+import 'package:hail_parks_guide/features/plants/plants_screen.dart';
+import 'package:hail_parks_guide/features/map/screens/map_page.dart';
 import 'package:hail_parks_guide/features/profile/screens/profile_screen.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -20,17 +21,21 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.initialIndex;
+    // Without Firebase, open on the Parks tab since Home needs Firebase.
+    _selectedIndex = !AppConfig.firebaseReady && widget.initialIndex == 0
+        ? 1
+        : widget.initialIndex;
   }
 
   @override
   Widget build(BuildContext context) {
+    final online = AppConfig.firebaseReady;
     final List<Widget> screens = [
-      const HomeScreen(),
+      online ? const HomeScreen() : const _NeedsFirebase(),
       const ParksScreen(),
       const PlantsScreen(),
-      const MapScreen(),
-      const ProfileScreen(),
+      online ? const MapPage() : const _NeedsFirebase(),
+      online ? const ProfileScreen() : const _NeedsFirebase(),
     ];
 
     return Scaffold(
@@ -82,6 +87,34 @@ class _MainNavigationState extends State<MainNavigation> {
               label: 'ملفي',
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NeedsFirebase extends StatelessWidget {
+  const _NeedsFirebase();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: AppColors.creamBackground,
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.cloud_off, size: 64, color: AppColors.mediumGrey),
+              SizedBox(height: 16),
+              Text(
+                'هذه الصفحة تحتاج ربط التطبيق بـ Firebase',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: AppColors.darkText),
+              ),
+            ],
+          ),
         ),
       ),
     );

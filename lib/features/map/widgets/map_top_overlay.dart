@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lib/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 class MapTopOverlay extends StatelessWidget {
   const MapTopOverlay({super.key});

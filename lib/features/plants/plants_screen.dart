@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lib/core/constants/app_colors.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/data/hail_data.dart';
+import 'package:hail_parks_guide/models/plant_model.dart';
 
 class PlantsScreen extends StatelessWidget {
   const PlantsScreen({super.key});
@@ -57,42 +58,29 @@ class PlantsScreen extends StatelessWidget {
   }
 
   Widget _buildPlantsList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream:
-      FirebaseFirestore.instance.collection('local_plants').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-              child: CircularProgressIndicator(color: AppColors.darkGreen));
-        }
+    final plants = HailData.plants;
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('لا توجد نباتات بعد',
-                style: TextStyle(color: AppColors.mediumGrey)),
-          );
-        }
+    if (plants.isEmpty) {
+      return const Center(
+        child: Text('لا توجد نباتات بعد',
+            style: TextStyle(color: AppColors.mediumGrey)),
+      );
+    }
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.85,
-          ),
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            final data = snapshot.data!.docs[index].data()
-            as Map<String, dynamic>;
-            return _buildPlantCard(data);
-          },
-        );
-      },
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: plants.length,
+      itemBuilder: (context, index) => _buildPlantCard(plants[index]),
     );
   }
 
-  Widget _buildPlantCard(Map<String, dynamic> data) {
+  Widget _buildPlantCard(Plant plant) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -112,12 +100,13 @@ class PlantsScreen extends StatelessWidget {
             borderRadius:
             const BorderRadius.vertical(top: Radius.circular(16)),
             child: Image.network(
-              data['imageUrl'] ?? '',
+              plant.image,
               height: 120,
               width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 height: 120,
+                width: double.infinity,
                 color: AppColors.paleGreen,
                 child: const Icon(Icons.local_florist,
                     size: 40, color: AppColors.mediumGreen),
@@ -130,7 +119,7 @@ class PlantsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  data['name'] ?? '',
+                  plant.name,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -139,7 +128,7 @@ class PlantsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  data['description'] ?? '',
+                  plant.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.right,

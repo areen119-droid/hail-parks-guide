@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lib/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 
 class NewsModel {
   final String id;

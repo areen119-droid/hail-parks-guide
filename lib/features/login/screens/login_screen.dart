@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lib/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/providers/auth_provider.dart' as app;
 import 'package:hail_parks_guide/features/login/screens/signup/signup_screen.dart';
 

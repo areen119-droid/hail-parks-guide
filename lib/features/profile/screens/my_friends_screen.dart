@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:lib/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/curved_header.dart';
 import 'package:hail_parks_guide/models/friend_model.dart';
 import 'package:hail_parks_guide/providers/friends_provider.dart';
-import 'profile_screen.dart';
 
 class MyFriendsScreen extends StatefulWidget {
   final String userId;
@@ -210,15 +209,7 @@ class _MyFriendsScreenState extends State<MyFriendsScreen> {
             ),
           ],
         ),
-        trailing: Icon(Icons.chevron_left, color: AppColors.baseDarkGreenColor), // Changed to left for RTL
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ProfileScreen(username: friend.id),
-            ),
-          );
-        },
+        // TODO: open the friend's profile once ProfileScreen supports other users.
       ),
     );
   }

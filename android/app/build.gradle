@@ -3,10 +3,11 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
     id("kotlin-android")
+}
 
-    id("com.google.gms.google-services")
-
-
+// Firebase is applied only once android/app/google-services.json is added.
+if (file("google-services.json").exists()) {
+    apply plugin: "com.google.gms.google-services"
 }
 
 // Google Maps key lives in android/local.properties (not committed): MAPS_API_KEY=...

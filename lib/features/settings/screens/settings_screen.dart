@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lib/core/constants/app_colors.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/providers/auth_provider.dart' as app;
 import 'package:hail_parks_guide/providers/user_provider.dart';
 import 'package:hail_parks_guide/providers/home_provider.dart';
-import 'package:hail_parks_guide/features/login/screens/signup_screen.dart';
+import 'package:hail_parks_guide/features/login/screens/signup/signup_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:lib/core/constants/app_colors.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/constants/app_config.dart';
+import 'package:hail_parks_guide/firebase/firebase_options.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/features/login/screens/login_screen.dart';
 import 'package:hail_parks_guide/providers/auth_provider.dart' as app;
@@ -10,7 +12,18 @@ import 'package:hail_parks_guide/providers/home_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    AppConfig.firebaseReady = true;
+  } catch (e) {
+    // Not connected to Firebase yet: run with the screens that work offline.
+    debugPrint('Firebase not configured, starting without it: $e');
+    runApp(const MyApp());
+    return;
+  }
 
   final authProvider = app.AuthProvider();
   final userProvider = UserProvider();

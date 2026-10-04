@@ -25,4 +25,27 @@ class AppColors {
 
   // Accents
   static const Color errorRed = Color(0xFFD32F2F);
+  static const Color brightBlue = Color(0xFF0088FF); // water
+  static const Color skyBlue = Color(0xFF3EC3FF); // water logo and cancel box
+
+  // Older names still used across the app, mapped onto the Hail palette
+  static const Color whiteColor = white;
+  static const Color baseBlackColor = darkText;
+  static const Color baseGreyColor = lightGrey;
+  static const Color baseLightGreenColor = creamBackground;
+  static const Color baseDarkGreenColor = darkGreen;
+  static const Color baseGreenColor = mediumGreen;
+  static const Color baseColor = paleGreen;
+  static const Color softMint = paleGreen;
+  static const Color softGreen = lightGreen;
+  static const Color sageTint = paleGreen;
+  static const Color Green = paleGreen;
+  static const Color tealGreen = mediumGreen;
+  static const Color forestGreen = darkGreen;
+  static const Color darkForestGreen = mediumGreen;
+  static const Color brightGreen = mediumGreen;
+  static const Color veryDarkGreen = darkGreen;
+  static const Color vibrantGreen = mediumGreen;
+  static const Color creamy = paleBrown;
+  static const Color signOutRed = errorRed;
 }
