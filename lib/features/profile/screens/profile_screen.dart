@@ -1,33 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
-import 'package:hail_parks_guide/providers/auth_provider.dart' as app;
-import 'package:hail_parks_guide/providers/user_provider.dart';
+import 'package:hail_parks_guide/core/widgets/smart_image.dart';
+import 'package:hail_parks_guide/data/hail_data.dart';
+import 'package:hail_parks_guide/features/parks/park_detail_screen.dart';
+import 'package:hail_parks_guide/features/plants/plant_detail_screen.dart';
+import 'package:hail_parks_guide/features/settings/screens/settings_screen.dart';
+import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authProvider =
-    Provider.of<app.AuthProvider>(context, listen: false);
-    final user = authProvider.currentUser;
+    final favorites = context.watch<FavoritesProvider>();
+    final parks = favorites.favoriteParks;
+    final plants = favorites.favoritePlants;
 
     return Scaffold(
       backgroundColor: AppColors.creamBackground,
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 24),
           child: Column(
             children: [
-              _buildHeader(user?.name ?? 'المستخدم', user?.city ?? ''),
+              _buildHeader(context),
               const SizedBox(height: 20),
-              _buildStatsRow(),
+              _buildStatsRow(parks.length, plants.length),
               const SizedBox(height: 24),
-              _buildSection('الأماكن المفضلة', Icons.favorite,
-                  AppColors.darkBrown),
+              _buildSection(
+                title: 'الحدائق المفضلة',
+                icon: Icons.park,
+                color: AppColors.darkBrown,
+                emptyText: 'اضغط على ♡ في صفحة أي حديقة لإضافتها هنا',
+                children: [
+                  for (final park in parks)
+                    _FavoriteTile(
+                      title: park.name,
+                      subtitle: park.location,
+                      image: park.image,
+                      placeholderIcon: Icons.park,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ParkDetailScreen(park: park)),
+                      ),
+                      onRemove: () => favorites.togglePark(park.id),
+                    ),
+                ],
+              ),
               const SizedBox(height: 16),
-              _buildSection('الأماكن التي زرتها', Icons.place,
-                  AppColors.darkGreen),
+              _buildSection(
+                title: 'النباتات المفضلة',
+                icon: Icons.local_florist,
+                color: AppColors.darkGreen,
+                emptyText: 'اضغط على ♡ في صفحة أي نبتة لإضافتها هنا',
+                children: [
+                  for (final plant in plants)
+                    _FavoriteTile(
+                      title: plant.name,
+                      subtitle: plant.type,
+                      image: plant.image,
+                      placeholderIcon: Icons.local_florist,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => PlantDetailScreen(plant: plant)),
+                      ),
+                      onRemove: () => favorites.togglePlant(plant.id),
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -35,10 +78,12 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(String name, String city) {
+  Widget _buildHeader(BuildContext context) {
+    const user = HailData.currentUser;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
+      padding: const EdgeInsets.fromLTRB(20, 12, 12, 30),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.darkBrown, AppColors.darkGreen],
@@ -52,6 +97,17 @@ class ProfileScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              tooltip: 'الإعدادات',
+              icon: const Icon(Icons.settings, color: AppColors.white),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              ),
+            ),
+          ),
           const CircleAvatar(
             radius: 45,
             backgroundColor: AppColors.lightSand,
@@ -59,27 +115,36 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            name,
+            user.name,
             style: const TextStyle(
               color: AppColors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (city.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  city,
-                  style: const TextStyle(
-                      color: AppColors.paleGreen, fontSize: 13),
-                ),
-                const SizedBox(width: 4),
-                const Icon(Icons.location_on,
-                    size: 14, color: AppColors.paleGreen),
-              ],
+          Text(
+            '@${user.username}',
+            style: const TextStyle(color: AppColors.paleBrown, fontSize: 13),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                user.city,
+                style: const TextStyle(color: AppColors.paleGreen, fontSize: 13),
+              ),
+              const SizedBox(width: 4),
+              const Icon(Icons.location_on,
+                  size: 14, color: AppColors.paleGreen),
+            ],
+          ),
+          if (user.bio.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              user.bio,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.white, fontSize: 13),
             ),
           ],
         ],
@@ -87,14 +152,14 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(int parkCount, int plantCount) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          _buildStatItem('0', 'أماكن زرتها', AppColors.darkGreen),
-          _buildDivider(),
-          _buildStatItem('0', 'المفضلة', AppColors.darkBrown),
+          _buildStatItem('$plantCount', 'نباتات مفضلة', AppColors.darkGreen),
+          Container(height: 40, width: 1, color: AppColors.lightGrey),
+          _buildStatItem('$parkCount', 'حدائق مفضلة', AppColors.darkBrown),
         ],
       ),
     );
@@ -114,25 +179,20 @@ class ProfileScreen extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.mediumGrey,
-            ),
+            style: const TextStyle(fontSize: 12, color: AppColors.mediumGrey),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDivider() {
-    return Container(
-      height: 40,
-      width: 1,
-      color: AppColors.lightGrey,
-    );
-  }
-
-  Widget _buildSection(String title, IconData icon, Color color) {
+  Widget _buildSection({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required String emptyText,
+    required List<Widget> children,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -154,27 +214,79 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.08),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Text(
-              'لا يوجد عناصر بعد',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.mediumGrey, fontSize: 13),
-            ),
-          ),
+          if (children.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                emptyText,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.mediumGrey, fontSize: 13),
+              ),
+            )
+          else
+            ...children,
         ],
+      ),
+    );
+  }
+}
+
+class _FavoriteTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String image;
+  final IconData placeholderIcon;
+  final VoidCallback onTap;
+  final VoidCallback onRemove;
+
+  const _FavoriteTile({
+    required this.title,
+    required this.subtitle,
+    required this.image,
+    required this.placeholderIcon,
+    required this.onTap,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: ListTile(
+        onTap: onTap,
+        leading: IconButton(
+          tooltip: 'إزالة من المفضلة',
+          icon: const Icon(Icons.favorite, color: AppColors.errorRed),
+          onPressed: onRemove,
+        ),
+        title: Text(
+          title,
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          subtitle,
+          textAlign: TextAlign.right,
+          style: const TextStyle(color: AppColors.mediumGrey, fontSize: 12),
+        ),
+        trailing: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: SmartImage(
+            imageData: image,
+            width: 52,
+            height: 52,
+            placeholderIcon: placeholderIcon,
+          ),
+        ),
       ),
     );
   }

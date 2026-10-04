@@ -3,6 +3,8 @@ import '../../../core/constants/app_color.dart';
 import '../../../core/widgets/curved_header.dart';
 
 class AboutUsScreen extends StatelessWidget {
+  const AboutUsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,18 +36,11 @@ class AboutUsScreen extends StatelessWidget {
 
                 // Logo
                 Center(
-                  child: Image.asset(
-                    'assets/plants/GNLogo.png',
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.eco,
-                        size: 80,
-                        color: AppColors.baseDarkGreenColor,
-                      );
-                    },
+                  child: CircleAvatar(
+                    radius: 56,
+                    backgroundColor: AppColors.softMint,
+                    child: Icon(Icons.park,
+                        size: 64, color: AppColors.baseDarkGreenColor),
                   ),
                 ),
 
@@ -57,7 +52,7 @@ class AboutUsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.baseDarkGreenColor,
+                    color: AppColors.white,
                   ),
                 ),
 
@@ -71,7 +66,7 @@ class AboutUsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'ننموا معا',
+                    'دليلك إلى حدائق حائل',
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.baseDarkGreenColor,
@@ -124,8 +119,10 @@ class AboutUsScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         Center(
                           child: Text(
-                            'نحن فريق من خمس طالبات طوّرنا تطبيقًا يهدف إلى تشجيع الأفراد على الاهتمام بالطبيعة وزراعة المساحات الفارغة. يوفر التطبيق إرشادات للري، والاطلاع على معلومات وأخبار بيئية، ويساعد المستخدمين على تحويل الأماكن غير المستغلة إلى مساحات خضراء بسهولة.\n\n'
-                                'يسعى المشروع إلى نشر الوعي البيئي وتعزيز ثقافة الاستدامة، انطلاقًا من فكرة أن التغيير يبدأ بخطوات بسيطة، دعمًا لتحسين جودة الحياة وتحقيق أهداف رؤية المملكة 2030 نحو بيئة أكثر خضرة.',
+                            'دليل حدائق حائل تطبيق يساعد الزوار والسياح على اكتشاف حدائق ومتنزهات منطقة حائل. '
+                                'يعرض التطبيق مواقع الحدائق على الخريطة مع معلومات عن كل حديقة ومرافقها، '
+                                'ويعرّف بالنباتات المحلية والنباتات المزروعة في المنطقة.\n\n'
+                                'يمكنك حفظ حدائقك ونباتاتك المفضلة في ملفك الشخصي للرجوع إليها في أي وقت.',
                             style: TextStyle(
                               fontSize: 15,
                               color: AppColors.baseBlackColor,
@@ -209,33 +206,34 @@ class AboutUsScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // Contact Section
+                // Credits Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color: AppColors.softMint,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Icon(Icons.email, color: AppColors.baseDarkGreenColor, size: 22),
-                        const SizedBox(width: 10),
                         Text(
-                          'HailParksGuide@gmail.com',
+                          'المصادر',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.baseBlackColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.baseDarkGreenColor,
                           ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'الخرائط: © OpenStreetMap contributors\n'
+                          'صور السدر والطلح والأرطى: Krzysztof Ziarnek (Kenraiz)، '
+                          'Wikimedia Commons، رخصة CC BY-SA 4.0',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(fontSize: 12, height: 1.6),
                         ),
                       ],
                     ),

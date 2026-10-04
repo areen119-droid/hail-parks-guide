@@ -68,10 +68,10 @@
 	</array> 
 
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>نحتاج موقعك لعرضه على الخريطة وتسجيل أماكن النباتات</string>
+<string>نحتاج موقعك لعرض مكانك على الخريطة بالقرب من الحدائق</string>
 
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-<string>نحتاج موقعك لتتبع وعرض أماكن النباتات</string>
+<string>نحتاج موقعك لعرض مكانك على الخريطة بالقرب من الحدائق</string>
 
 <key>NSCameraUsageDescription</key>
 <string>نحتاج الكاميرا لالتقاط صور النباتات وإضافتها</string>

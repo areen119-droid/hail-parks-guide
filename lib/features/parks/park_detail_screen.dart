@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/smart_image.dart';
 import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
 class ParkDetailScreen extends StatelessWidget {
   final ParkModel park;
@@ -9,6 +14,9 @@ class ParkDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favorites = context.watch<FavoritesProvider>();
+    final isFavorite = favorites.isFavoritePark(park.id);
+
     return Scaffold(
       backgroundColor: AppColors.creamBackground,
       body: CustomScrollView(
@@ -18,6 +26,13 @@ class ParkDetailScreen extends StatelessWidget {
             pinned: true,
             backgroundColor: AppColors.darkGreen,
             foregroundColor: AppColors.white,
+            actions: [
+              IconButton(
+                tooltip: 'المفضلة',
+                icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                onPressed: () => favorites.togglePark(park.id),
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 park.name,
@@ -26,21 +41,19 @@ class ParkDetailScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              background: Image.network(
-                park.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.darkGreen, AppColors.mediumBrown],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: const Icon(Icons.park,
-                      size: 80, color: AppColors.paleGreen),
-                ),
-              ),
+              background: park.image.isEmpty
+                  ? Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [AppColors.darkGreen, AppColors.mediumBrown],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: const Icon(Icons.park,
+                          size: 80, color: AppColors.paleGreen),
+                    )
+                  : SmartImage(imageData: park.image, placeholderIcon: Icons.park),
             ),
           ),
           SliverToBoxAdapter(
@@ -81,11 +94,50 @@ class ParkDetailScreen extends StatelessWidget {
                           .toList(),
                     ),
                   ],
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('الموقع'),
+                  _buildLocationMap(),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLocationMap() {
+    final point = LatLng(park.latitude, park.longitude);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        height: 180,
+        child: FlutterMap(
+          options: MapOptions(
+            initialCenter: point,
+            initialZoom: 15,
+            interactionOptions:
+                const InteractionOptions(flags: InteractiveFlag.none),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.hailparksguide.app',
+            ),
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: point,
+                  width: 44,
+                  height: 44,
+                  alignment: Alignment.topCenter,
+                  child: const Icon(Icons.location_on,
+                      size: 44, color: AppColors.darkGreen),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

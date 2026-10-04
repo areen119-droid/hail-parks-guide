@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
 
-/// Displays either a base64 encoded image or a network image URL
+/// Displays an asset path, a base64 encoded image, or a network image URL.
+/// Shows [placeholderIcon] when the image is empty or fails to load.
 class SmartImage extends StatelessWidget {
   final String imageData;
   final double? width;
   final double? height;
   final BoxFit fit;
+  final IconData placeholderIcon;
 
   const SmartImage({
     super.key,
@@ -14,59 +17,55 @@ class SmartImage extends StatelessWidget {
     this.width,
     this.height,
     this.fit = BoxFit.cover,
+    this.placeholderIcon = Icons.local_florist,
   });
 
+  bool get isAsset => imageData.startsWith('assets/');
   bool get isBase64 => imageData.startsWith('data:image');
 
   @override
   Widget build(BuildContext context) {
-    if (imageData.isEmpty) {
-      return Container(
+    if (imageData.isEmpty) return _placeholder();
+
+    if (isAsset) {
+      return Image.asset(
+        imageData,
         width: width,
         height: height,
-        color: Colors.grey[200],
-        child: const Icon(Icons.local_florist, color: Colors.grey),
+        fit: fit,
+        errorBuilder: (_, __, ___) => _placeholder(),
       );
     }
 
     if (isBase64) {
-      final base64Str = imageData.split(',').last;
       try {
-        final bytes = base64Decode(base64Str);
         return Image.memory(
-          bytes,
+          base64Decode(imageData.split(',').last),
           width: width,
           height: height,
           fit: fit,
-          errorBuilder: (_, __, ___) => Container(
-            width: width,
-            height: height,
-            color: Colors.grey[200],
-            child: const Icon(Icons.image_not_supported),
-          ),
+          errorBuilder: (_, __, ___) => _placeholder(),
         );
       } catch (e) {
-        return Container(
-          width: width,
-          height: height,
-          color: Colors.grey[200],
-          child: const Icon(Icons.image_not_supported),
-        );
+        return _placeholder();
       }
     }
 
-    // Regular network URL
     return Image.network(
       imageData,
       width: width,
       height: height,
       fit: fit,
-      errorBuilder: (_, __, ___) => Container(
-        width: width,
-        height: height,
-        color: Colors.grey[200],
-        child: const Icon(Icons.image_not_supported),
-      ),
+      errorBuilder: (_, __, ___) => _placeholder(),
+    );
+  }
+
+  Widget _placeholder() {
+    return Container(
+      width: width,
+      height: height,
+      color: AppColors.lightSand,
+      child: Icon(placeholderIcon, size: 48, color: AppColors.mediumGrey),
     );
   }
 }

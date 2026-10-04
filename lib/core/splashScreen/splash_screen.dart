@@ -1,10 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
-import 'package:hail_parks_guide/providers/auth_provider.dart' as app;
-import 'package:hail_parks_guide/features/login/screens/login_screen.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,43 +18,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigate() async {
-    // Wait minimum 3 seconds for splash to show
+    // Show the splash for 3 seconds, then open the app.
     await Future.delayed(const Duration(seconds: 3));
-
     if (!mounted) return;
-
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-
-    if (firebaseUser == null) {
-      // Not logged in — go straight to login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-      return;
-    }
-
-    // Logged in — wait for AuthProvider to finish fetching user from Firestore
-    final authProvider = Provider.of<app.AuthProvider>(context, listen: false);
-
-    // If user is already loaded, navigate immediately
-    if (authProvider.currentUser != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MainNavigation()),
-      );
-      return;
-    }
-
-    // Otherwise wait for it — poll every 100ms up to 5 seconds
-    int attempts = 0;
-    while (authProvider.currentUser == null && attempts < 50) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      attempts++;
-    }
-
-    if (!mounted) return;
-
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const MainNavigation()),

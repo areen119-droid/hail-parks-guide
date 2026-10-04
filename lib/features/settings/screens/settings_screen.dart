@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
-import 'package:hail_parks_guide/providers/auth_provider.dart' as app;
-import 'package:hail_parks_guide/providers/user_provider.dart';
-import 'package:hail_parks_guide/providers/home_provider.dart';
-import 'package:hail_parks_guide/features/login/screens/signup/signup_screen.dart';
+import 'package:hail_parks_guide/features/settings/screens/about_us_screen.dart';
+import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -29,10 +27,19 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         children: [
           _buildTile(
-            icon: Icons.logout,
-            title: 'تسجيل الخروج',
+            icon: Icons.info_outline,
+            title: 'عن التطبيق',
+            color: AppColors.darkGreen,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+            ),
+          ),
+          _buildTile(
+            icon: Icons.heart_broken_outlined,
+            title: 'مسح المفضلة',
             color: AppColors.errorRed,
-            onTap: () => _showLogoutDialog(context),
+            onTap: () => _showClearFavoritesDialog(context),
           ),
         ],
       ),
@@ -68,14 +75,14 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showClearFavoritesDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('تسجيل الخروج'),
-        content: const Text('هل أنت متأكد من رغبتك في تسجيل الخروج؟'),
+        title: const Text('مسح المفضلة'),
+        content: const Text('هل تريد إزالة جميع الحدائق والنباتات من المفضلة؟'),
         shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -83,25 +90,11 @@ class SettingsScreen extends StatelessWidget {
                 style: TextStyle(color: AppColors.mediumGrey)),
           ),
           TextButton(
-            onPressed: () async {
+            onPressed: () {
               Navigator.pop(ctx);
-              final authProvider =
-              Provider.of<app.AuthProvider>(context, listen: false);
-              final userProvider =
-              Provider.of<UserProvider>(context, listen: false);
-              final homeProvider =
-              Provider.of<HomeProvider>(context, listen: false);
-              await authProvider.signOut();
-              userProvider.clearLoggedInUser();
-              homeProvider.reset();
-              if (context.mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const SignupScreen()),
-                      (route) => false,
-                );
-              }
+              context.read<FavoritesProvider>().clearAll();
             },
-            child: const Text('تسجيل الخروج',
+            child: const Text('مسح',
                 style: TextStyle(color: AppColors.errorRed)),
           ),
         ],

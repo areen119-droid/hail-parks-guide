@@ -1,25 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Plant {
   final String id;
   final String name;
+  final String scientificName;
+  final String type; // e.g. wild native plant or ornamental plant
   final String description;
-  final String image;
+  final String image; // asset path
 
-  Plant({
+  const Plant({
     required this.id,
     required this.name,
+    required this.scientificName,
+    required this.type,
     required this.description,
     required this.image,
   });
-
-  factory Plant.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Plant(
-      id: doc.id,
-      name: data['name'] ?? '',
-      description: data['description'] ?? '',
-      image: data['image'] ?? '',
-    );
-  }
 }

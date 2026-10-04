@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/smart_image.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
+import 'package:hail_parks_guide/features/plants/plant_detail_screen.dart';
 import 'package:hail_parks_guide/models/plant_model.dart';
+import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
 class PlantsScreen extends StatelessWidget {
   const PlantsScreen({super.key});
@@ -40,7 +44,7 @@ class PlantsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            'نباتات حائل المحلية',
+            'نباتات حائل',
             style: TextStyle(
               color: AppColors.white,
               fontSize: 22,
@@ -49,7 +53,7 @@ class PlantsScreen extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            'تعرف على النباتات الأصيلة في المنطقة',
+            'تعرف على النباتات في حدائق ومتنزهات المنطقة',
             style: TextStyle(color: AppColors.paleGreen, fontSize: 13),
           ),
         ],
@@ -58,14 +62,7 @@ class PlantsScreen extends StatelessWidget {
   }
 
   Widget _buildPlantsList() {
-    final plants = HailData.plants;
-
-    if (plants.isEmpty) {
-      return const Center(
-        child: Text('لا توجد نباتات بعد',
-            style: TextStyle(color: AppColors.mediumGrey)),
-      );
-    }
+    const plants = HailData.plants;
 
     return GridView.builder(
       padding: const EdgeInsets.all(16),
@@ -73,74 +70,111 @@ class PlantsScreen extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 0.85,
+        childAspectRatio: 0.8,
       ),
       itemCount: plants.length,
-      itemBuilder: (context, index) => _buildPlantCard(plants[index]),
+      itemBuilder: (context, index) => _PlantCard(plant: plants[index]),
     );
   }
+}
 
-  Widget _buildPlantCard(Plant plant) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.darkGreen.withOpacity(0.08),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+class _PlantCard extends StatelessWidget {
+  final Plant plant;
+
+  const _PlantCard({required this.plant});
+
+  @override
+  Widget build(BuildContext context) {
+    final favorites = context.watch<FavoritesProvider>();
+    final isFavorite = favorites.isFavoritePlant(plant.id);
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => PlantDetailScreen(plant: plant)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          ClipRRect(
-            borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Image.network(
-              plant.image,
-              height: 120,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 120,
-                width: double.infinity,
-                color: AppColors.paleGreen,
-                child: const Icon(Icons.local_florist,
-                    size: 40, color: AppColors.mediumGreen),
-              ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.darkGreen.withOpacity(0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Stack(
               children: [
-                Text(
-                  plant.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: AppColors.darkText,
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: SmartImage(
+                    imageData: plant.image,
+                    height: 120,
+                    width: double.infinity,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  plant.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.mediumGrey,
+                Positioned(
+                  top: 6,
+                  left: 6,
+                  child: GestureDetector(
+                    onTap: () => favorites.togglePlant(plant.id),
+                    child: CircleAvatar(
+                      radius: 16,
+                      backgroundColor: AppColors.white.withOpacity(0.9),
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        size: 18,
+                        color: AppColors.errorRed,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    plant.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: AppColors.darkText,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    plant.type,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.mediumGreen,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    plant.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.mediumGrey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
