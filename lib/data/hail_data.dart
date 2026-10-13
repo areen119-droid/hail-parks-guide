@@ -253,7 +253,12 @@ class HailData {
       latitude: 27.52162,
       longitude: 41.72335,
       image: 'assets/places/samra_1.jpg',
-      facilities: ['بحيرات وشلالات', 'ألعاب أطفال', 'مطاعم ومقاهٍ', 'مسطحات خضراء'],
+      facilities: [
+        'بحيرات وشلالات',
+        'ألعاب أطفال',
+        'مطاعم ومقاهٍ',
+        'مسطحات خضراء',
+      ],
     ),
     PlaceModel(
       id: 'mashar',
@@ -293,34 +298,47 @@ class HailData {
     ),
 
     // Restaurants
-    // TODO: add each restaurant's food type and location (Google Maps link).
+    // TODO: add each restaurant's location (Google Maps link).
     PlaceModel(
       id: 'loft',
       name: 'Loft',
       category: PlaceCategory.restaurant,
-      description: 'مطعم في مدينة حائل.',
+      description:
+          'مطعم متنوع المطابخ يقدم البرجر والباستا والبيتزا والسلطات وأطباقًا سعودية مثل الأرز، وفيه ركن للقهوة. من أفضل المطاعم في حائل.',
       location: 'مدينة حائل',
+      facilities: [
+        'برجر',
+        'باستا وبيتزا',
+        'سلطات',
+        'أطباق سعودية',
+        'ركن قهوة',
+        'مناسب للعائلات',
+      ],
     ),
     PlaceModel(
       id: 'me_gusta',
       name: 'Me Gusta',
       category: PlaceCategory.restaurant,
-      description: 'مطعم في مدينة حائل.',
+      description:
+          'مطعم إيطالي بقائمة متنوعة قريبة من قائمة Loft، تشمل الباستا والبيتزا والبرجر والسلطات.',
       location: 'مدينة حائل',
+      facilities: ['مطبخ إيطالي', 'باستا وبيتزا', 'برجر', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'rogaruka',
       name: 'RogaRuka',
       category: PlaceCategory.restaurant,
-      description: 'مطعم في مدينة حائل.',
+      description: 'مطعم إيطالي في مدينة حائل.',
       location: 'مدينة حائل',
+      facilities: ['مطبخ إيطالي', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'opalo',
       name: 'Opalo',
       category: PlaceCategory.restaurant,
-      description: 'مطعم في مدينة حائل.',
+      description: 'مطعم إيطالي في مدينة حائل.',
       location: 'مدينة حائل',
+      facilities: ['مطبخ إيطالي', 'مناسب للعائلات'],
     ),
 
     // Cafes
@@ -329,37 +347,43 @@ class HailData {
       name: 'Camel Step خطوة جمل',
       category: PlaceCategory.cafe,
       description:
-          'فرع حائل من محمصة القهوة المختصة السعودية، في مبنى قديم أعيد '
-          'تجديده بحجر الجرانيت المحلي من حائل، بجلسات داخلية وفناء.',
+          'فرع حائل من محمصة القهوة المختصة السعودية المعروفة، ولها فروع في الرياض ومدن أخرى. المقهى في مبنى قديم أعيد تجديده بحجر الجرانيت المحلي من حائل. ليس مخصصًا للعائلات.',
       location: 'حي البحيرة، حائل',
+      facilities: ['قهوة مختصة', 'علامة سعودية'],
     ),
     PlaceModel(
       id: 'aladham',
       name: 'الأدهم',
       category: PlaceCategory.cafe,
-      description: 'مقهى في حائل بطابع يجمع بين الخيل والقهوة.',
+      description:
+          'من أشهر مقاهي حائل، يتميز بموقعه الرائع وجلساته الخارجية المفتوحة المطلة على الجبال.',
       location: 'مدينة حائل',
+      facilities: ['جلسات خارجية', 'إطلالة على الجبال', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'osol',
       name: 'أصول Osol',
       category: PlaceCategory.cafe,
-      description: 'مقهى في مدينة حائل.',
+      description:
+          'مقهى في مدينة حائل يقدم حلويات مميزة ولذيذة. ليس مخصصًا للعائلات.',
       location: 'مدينة حائل',
+      facilities: ['حلويات مميزة'],
     ),
     PlaceModel(
       id: 'namq',
       name: 'نمق Namq',
       category: PlaceCategory.cafe,
-      description: 'مقهى في مدينة حائل.',
+      description: 'مقهى سعودي معروف وواسع الشهرة، له فروع في الرياض وحائل.',
       location: 'مدينة حائل',
+      facilities: ['علامة سعودية', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'blunt',
       name: 'Blunt',
       category: PlaceCategory.cafe,
-      description: 'مقهى في مدينة حائل.',
+      description: 'من أعلى المقاهي تقييمًا في حائل. ليس مخصصًا للعائلات.',
       location: 'مدينة حائل',
+      facilities: ['الأعلى تقييمًا'],
     ),
   ];
 
