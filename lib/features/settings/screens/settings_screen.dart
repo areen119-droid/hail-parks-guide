@@ -1,103 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/confirmation_dialog.dart';
+import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/features/settings/screens/about_us_screen.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  Future<void> _clearFavorites(BuildContext context) async {
+    final favorites = context.read<FavoritesProvider>();
+    final confirmed = await showConfirmationDialog(
+      context,
+      title: 'مسح المفضلة',
+      message: 'هل تريد إزالة جميع الحدائق والنباتات من المفضلة؟',
+      confirmLabel: 'مسح',
+    );
+    if (confirmed) await favorites.clearAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.creamBackground,
-      appBar: AppBar(
-        title: const Text(
-          'الإعدادات',
-          style: TextStyle(
-            color: AppColors.darkText,
-            fontWeight: FontWeight.bold,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.background),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            children: [
+              Row(
+                children: [
+                  CircleIconButton(
+                    icon: Icons.arrow_back,
+                    tooltip: 'رجوع',
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(width: 14),
+                  const Text('الإعدادات', style: AppText.title),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _SettingsTile(
+                icon: Icons.info_outline,
+                title: 'عن التطبيق',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                ),
+              ),
+              _SettingsTile(
+                icon: Icons.heart_broken_outlined,
+                title: 'مسح المفضلة',
+                color: AppColors.error,
+                onTap: () => _clearFavorites(context),
+              ),
+            ],
           ),
         ),
-        backgroundColor: AppColors.creamBackground,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.darkText),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          _buildTile(
-            icon: Icons.info_outline,
-            title: 'عن التطبيق',
-            color: AppColors.darkGreen,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AboutUsScreen()),
-            ),
-          ),
-          _buildTile(
-            icon: Icons.heart_broken_outlined,
-            title: 'مسح المفضلة',
-            color: AppColors.errorRed,
-            onTap: () => _showClearFavoritesDialog(context),
-          ),
-        ],
       ),
     );
   }
+}
 
-  Widget _buildTile({
-    required IconData icon,
-    required String title,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.color = AppColors.textPrimary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppColors.cream,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
         leading: Icon(icon, color: color),
-        title: Text(title,
-            style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-        trailing: const Icon(Icons.chevron_right, color: AppColors.mediumGrey),
+        title: Text(
+          title,
+          style: TextStyle(color: color, fontWeight: FontWeight.w700),
+        ),
+        trailing: const Icon(Icons.chevron_left, color: AppColors.textSecondary),
         onTap: onTap,
-      ),
-    );
-  }
-
-  void _showClearFavoritesDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('مسح المفضلة'),
-        content: const Text('هل تريد إزالة جميع الحدائق والنباتات من المفضلة؟'),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('إلغاء',
-                style: TextStyle(color: AppColors.mediumGrey)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<FavoritesProvider>().clearAll();
-            },
-            child: const Text('مسح',
-                style: TextStyle(color: AppColors.errorRed)),
-          ),
-        ],
       ),
     );
   }

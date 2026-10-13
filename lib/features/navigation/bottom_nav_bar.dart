@@ -1,85 +1,112 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/features/home/screens/home_screen.dart';
 import 'package:hail_parks_guide/features/map/screens/map_page.dart';
 import 'package:hail_parks_guide/features/plants/plants_screen.dart';
 import 'package:hail_parks_guide/features/profile/screens/profile_screen.dart';
+import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
-class MainNavigation extends StatefulWidget {
-  final int initialIndex;
-  const MainNavigation({super.key, this.initialIndex = 0});
+/// Space screens leave at the bottom so content isn't hidden by the nav bar.
+const double kNavBarSpace = 110;
 
-  @override
-  State<MainNavigation> createState() => _MainNavigationState();
-}
+class MainNavigation extends StatelessWidget {
+  const MainNavigation({super.key});
 
-class _MainNavigationState extends State<MainNavigation> {
-  late int _selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.initialIndex;
-  }
-
-  void _selectTab(int index) => setState(() => _selectedIndex = index);
+  static const _items = [
+    _NavItem(Icons.home_outlined, Icons.home_rounded, 'الرئيسية'),
+    _NavItem(Icons.map_outlined, Icons.map_rounded, 'الخريطة'),
+    _NavItem(Icons.local_florist_outlined, Icons.local_florist, 'النباتات'),
+    _NavItem(Icons.person_outline, Icons.person_rounded, 'ملفي'),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      HomeScreen(onOpenMap: () => _selectTab(1)),
-      const MapPage(),
-      const PlantsScreen(),
-      const ProfileScreen(),
-    ];
+    final nav = context.watch<NavigationProvider>();
 
     return Scaffold(
-      // IndexedStack keeps the map's position when switching tabs.
-      body: IndexedStack(index: _selectedIndex, children: screens),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.darkBrown.withOpacity(0.15),
-              blurRadius: 12,
-              offset: const Offset(0, -3),
-            ),
-          ],
+      extendBody: true,
+      // IndexedStack keeps each tab's state (like the map position).
+      body: IndexedStack(
+        index: nav.tabIndex,
+        children: const [
+          HomeScreen(),
+          MapPage(),
+          PlantsScreen(),
+          ProfileScreen(),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: Container(
+          height: 72,
+          decoration: BoxDecoration(
+            color: AppColors.brown,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brown.withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              for (var i = 0; i < _items.length; i++)
+                Expanded(
+                  child: _NavButton(
+                    item: _items[i],
+                    selected: nav.tabIndex == i,
+                    onTap: () => nav.selectTab(i),
+                  ),
+                ),
+            ],
+          ),
         ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _selectedIndex,
-          onTap: _selectTab,
-          selectedItemColor: AppColors.darkGreen,
-          unselectedItemColor: AppColors.mediumGrey,
-          backgroundColor: AppColors.white,
-          elevation: 0,
-          selectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'الرئيسية',
+      ),
+    );
+  }
+}
+
+class _NavItem {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  const _NavItem(this.icon, this.activeIcon, this.label);
+}
+
+class _NavButton extends StatelessWidget {
+  final _NavItem item;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _NavButton({
+    required this.item,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppColors.white : AppColors.chip.withValues(alpha: 0.6);
+    return InkWell(
+      borderRadius: BorderRadius.circular(28),
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(selected ? item.activeIcon : item.icon, color: color, size: 24),
+          const SizedBox(height: 4),
+          Text(
+            item.label,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined),
-              activeIcon: Icon(Icons.map),
-              label: 'الخريطة',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.local_florist_outlined),
-              activeIcon: Icon(Icons.local_florist),
-              label: 'النباتات',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'ملفي',
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

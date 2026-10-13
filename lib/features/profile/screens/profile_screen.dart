@@ -1,291 +1,267 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/core/widgets/smart_image.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
+import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/features/parks/park_detail_screen.dart';
 import 'package:hail_parks_guide/features/plants/plant_detail_screen.dart';
 import 'package:hail_parks_guide/features/settings/screens/settings_screen.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _showParks = true;
 
   @override
   Widget build(BuildContext context) {
     final favorites = context.watch<FavoritesProvider>();
     final parks = favorites.favoriteParks;
     final plants = favorites.favoritePlants;
-
-    return Scaffold(
-      backgroundColor: AppColors.creamBackground,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 24),
-          child: Column(
-            children: [
-              _buildHeader(context),
-              const SizedBox(height: 20),
-              _buildStatsRow(parks.length, plants.length),
-              const SizedBox(height: 24),
-              _buildSection(
-                title: 'الحدائق المفضلة',
-                icon: Icons.park,
-                color: AppColors.darkBrown,
-                emptyText: 'اضغط على ♡ في صفحة أي حديقة لإضافتها هنا',
-                children: [
-                  for (final park in parks)
-                    _FavoriteTile(
-                      title: park.name,
-                      subtitle: park.location,
-                      image: park.image,
-                      placeholderIcon: Icons.park,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ParkDetailScreen(park: park)),
-                      ),
-                      onRemove: () => favorites.togglePark(park.id),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildSection(
-                title: 'النباتات المفضلة',
-                icon: Icons.local_florist,
-                color: AppColors.darkGreen,
-                emptyText: 'اضغط على ♡ في صفحة أي نبتة لإضافتها هنا',
-                children: [
-                  for (final plant in plants)
-                    _FavoriteTile(
-                      title: plant.name,
-                      subtitle: plant.type,
-                      image: plant.image,
-                      placeholderIcon: Icons.local_florist,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => PlantDetailScreen(plant: plant)),
-                      ),
-                      onRemove: () => favorites.togglePlant(plant.id),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
     const user = HailData.currentUser;
 
+    final List<_FavoriteItem> items = _showParks
+        ? [
+            for (final park in parks)
+              _FavoriteItem(
+                title: park.name,
+                subtitle: park.location,
+                image: park.image,
+                icon: Icons.park,
+                open: () => ParkDetailScreen(park: park),
+                remove: () => favorites.togglePark(park.id),
+              ),
+          ]
+        : [
+            for (final plant in plants)
+              _FavoriteItem(
+                title: plant.name,
+                subtitle: plant.type,
+                image: plant.image,
+                icon: Icons.local_florist,
+                open: () => PlantDetailScreen(plant: plant),
+                remove: () => favorites.togglePlant(plant.id),
+              ),
+          ];
+
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 12, 12, 30),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.darkBrown, AppColors.darkGreen],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(32),
-          bottomRight: Radius.circular(32),
-        ),
-      ),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: IconButton(
-              tooltip: 'الإعدادات',
-              icon: const Icon(Icons.settings, color: AppColors.white),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+      decoration: const BoxDecoration(gradient: AppColors.background),
+      child: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, kNavBarSpace),
+          children: [
+            Row(
+              children: [
+                const Text('ملفي', style: AppText.title),
+                const Spacer(),
+                CircleIconButton(
+                  icon: Icons.settings_outlined,
+                  tooltip: 'الإعدادات',
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: AppColors.cream,
+                  shape: BoxShape.circle,
+                ),
+                child: const CircleAvatar(
+                  radius: 46,
+                  backgroundColor: AppColors.chip,
+                  child: Icon(Icons.person, size: 52, color: AppColors.brownMedium),
+                ),
               ),
             ),
-          ),
-          const CircleAvatar(
-            radius: 45,
-            backgroundColor: AppColors.lightSand,
-            child: Icon(Icons.person, size: 50, color: AppColors.mediumBrown),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            user.name,
-            style: const TextStyle(
-              color: AppColors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+            Center(child: Text(user.name, style: AppText.title)),
+            Center(
+              child: Text('@${user.username}', style: AppText.caption),
             ),
-          ),
-          Text(
-            '@${user.username}',
-            style: const TextStyle(color: AppColors.paleBrown, fontSize: 13),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                user.city,
-                style: const TextStyle(color: AppColors.paleGreen, fontSize: 13),
+            const SizedBox(height: 6),
+            Center(
+              child: Text(
+                user.bio,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14, color: AppColors.brownMedium),
               ),
-              const SizedBox(width: 4),
-              const Icon(Icons.location_on,
-                  size: 14, color: AppColors.paleGreen),
-            ],
-          ),
-          if (user.bio.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              user.bio,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.white, fontSize: 13),
             ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: AppColors.cream,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Row(
+                children: [
+                  _Stat(value: '${parks.length}', label: 'حدائق مفضلة'),
+                  Container(width: 1, height: 36, color: AppColors.divider),
+                  _Stat(value: '${plants.length}', label: 'نباتات مفضلة'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 22),
+            Row(
+              children: [
+                PillChip(
+                  label: 'الحدائق',
+                  selected: _showParks,
+                  onTap: () => setState(() => _showParks = true),
+                ),
+                const SizedBox(width: 8),
+                PillChip(
+                  label: 'النباتات',
+                  selected: !_showParks,
+                  onTap: () => setState(() => _showParks = false),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            if (items.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.cream,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.favorite_border,
+                        size: 36, color: AppColors.textSecondary),
+                    const SizedBox(height: 8),
+                    Text(
+                      _showParks
+                          ? 'اضغط ♡ على أي حديقة لإضافتها هنا'
+                          : 'اضغط ♡ على أي نبتة لإضافتها هنا',
+                      textAlign: TextAlign.center,
+                      style: AppText.caption,
+                    ),
+                  ],
+                ),
+              )
+            else
+              for (final item in items) _FavoriteTile(item: item),
           ],
-        ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildStatsRow(int parkCount, int plantCount) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          _buildStatItem('$plantCount', 'نباتات مفضلة', AppColors.darkGreen),
-          Container(height: 40, width: 1, color: AppColors.lightGrey),
-          _buildStatItem('$parkCount', 'حدائق مفضلة', AppColors.darkBrown),
-        ],
-      ),
-    );
-  }
+class _Stat extends StatelessWidget {
+  final String value;
+  final String label;
 
-  Widget _buildStatItem(String value, String label, Color color) {
+  const _Stat({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: color,
+            style: const TextStyle(
+              fontFamily: AppText.headingFont,
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
+              color: AppColors.brown,
             ),
           ),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, color: AppColors.mediumGrey),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSection({
-    required String title,
-    required IconData icon,
-    required Color color,
-    required String emptyText,
-    required List<Widget> children,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(icon, color: color, size: 20),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (children.isEmpty)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                emptyText,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.mediumGrey, fontSize: 13),
-              ),
-            )
-          else
-            ...children,
+          Text(label, style: AppText.caption),
         ],
       ),
     );
   }
 }
 
-class _FavoriteTile extends StatelessWidget {
+class _FavoriteItem {
   final String title;
   final String subtitle;
   final String image;
-  final IconData placeholderIcon;
-  final VoidCallback onTap;
-  final VoidCallback onRemove;
+  final IconData icon;
+  final Widget Function() open;
+  final VoidCallback remove;
 
-  const _FavoriteTile({
+  const _FavoriteItem({
     required this.title,
     required this.subtitle,
     required this.image,
-    required this.placeholderIcon,
-    required this.onTap,
-    required this.onRemove,
+    required this.icon,
+    required this.open,
+    required this.remove,
   });
+}
+
+class _FavoriteTile extends StatelessWidget {
+  final _FavoriteItem item;
+
+  const _FavoriteTile({required this.item});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => item.open()),
       ),
-      child: ListTile(
-        onTap: onTap,
-        leading: IconButton(
-          tooltip: 'إزالة من المفضلة',
-          icon: const Icon(Icons.favorite, color: AppColors.errorRed),
-          onPressed: onRemove,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.cream,
+          borderRadius: BorderRadius.circular(22),
         ),
-        title: Text(
-          title,
-          textAlign: TextAlign.right,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          subtitle,
-          textAlign: TextAlign.right,
-          style: const TextStyle(color: AppColors.mediumGrey, fontSize: 12),
-        ),
-        trailing: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: SmartImage(
-            imageData: image,
-            width: 52,
-            height: 52,
-            placeholderIcon: placeholderIcon,
-          ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: SmartImage(
+                imageData: item.image,
+                width: 64,
+                height: 64,
+                placeholderIcon: item.icon,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Text(item.subtitle, style: AppText.caption),
+                ],
+              ),
+            ),
+            IconButton(
+              tooltip: 'إزالة من المفضلة',
+              icon: const Icon(Icons.favorite, color: AppColors.error),
+              onPressed: item.remove,
+            ),
+          ],
         ),
       ),
     );

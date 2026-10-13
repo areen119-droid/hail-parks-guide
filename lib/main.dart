@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/app/theme.dart';
+import 'package:hail_parks_guide/core/splashScreen/splash_screen.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
+import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => FavoritesProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => NavigationProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -21,12 +27,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'دليل حدائق حائل',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Cairo',
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.darkGreen),
-        scaffoldBackgroundColor: AppColors.creamBackground,
-      ),
-      home: const MainNavigation(),
+      theme: buildAppTheme(),
+      // Arabic, right-to-left throughout the app.
+      locale: const Locale('ar'),
+      supportedLocales: const [Locale('ar')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      home: const SplashScreen(),
       routes: {
         '/home': (context) => const MainNavigation(),
       },

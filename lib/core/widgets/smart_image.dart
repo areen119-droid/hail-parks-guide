@@ -64,8 +64,8 @@ class SmartImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: AppColors.lightSand,
-      child: Icon(placeholderIcon, size: 48, color: AppColors.mediumGrey),
+      color: AppColors.chip,
+      child: Icon(placeholderIcon, size: 48, color: AppColors.textSecondary),
     );
   }
 }

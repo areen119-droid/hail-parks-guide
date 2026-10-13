@@ -6,6 +6,7 @@ class ParkModel {
   final double latitude;
   final double longitude;
   final String image; // asset path or network URL, empty for placeholder
+  final List<String> gallery; // extra photos shown on the details page
   final String openingHours;
   final List<String> facilities;
 
@@ -17,6 +18,7 @@ class ParkModel {
     required this.latitude,
     required this.longitude,
     this.image = '',
+    this.gallery = const [],
     this.openingHours = '',
     this.facilities = const [],
   });

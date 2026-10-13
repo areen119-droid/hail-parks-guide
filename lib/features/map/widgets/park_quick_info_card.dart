@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/smart_image.dart';
 import 'package:hail_parks_guide/features/parks/park_detail_screen.dart';
 import 'package:hail_parks_guide/models/park_model.dart';
 
-/// Card shown at the bottom of the map when a park pin is tapped.
+/// Card shown above the nav bar when a park pin is tapped.
 class ParkQuickInfoCard extends StatelessWidget {
   final ParkModel park;
   final VoidCallback onClose;
@@ -14,97 +16,88 @@ class ParkQuickInfoCard extends StatelessWidget {
     required this.onClose,
   });
 
+  void _openDetails(BuildContext context) => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ParkDetailScreen(park: park)),
+      );
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.close, color: AppColors.mediumGrey),
-                onPressed: onClose,
-              ),
-              const Spacer(),
-              Flexible(
-                child: Text(
-                  park.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.darkText,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.park, color: AppColors.darkGreen),
-            ],
-          ),
-          Text(
-            park.description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.right,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.mediumGrey,
-              height: 1.4,
-            ),
-          ),
-          if (park.openingHours.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  park.openingHours,
-                  style: const TextStyle(
-                      fontSize: 12, color: AppColors.mediumBrown),
-                ),
-                const SizedBox(width: 4),
-                const Icon(Icons.access_time,
-                    size: 14, color: AppColors.mediumBrown),
-              ],
+    return GestureDetector(
+      onTap: () => _openDetails(context),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.cream,
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.brown.withValues(alpha: 0.2),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
             ),
           ],
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ParkDetailScreen(park: park),
-                ),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: SmartImage(
+                imageData: park.image,
+                width: 96,
+                height: 96,
+                placeholderIcon: Icons.park,
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.darkGreen,
-                foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('عرض التفاصيل'),
             ),
-          ),
-        ],
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    park.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    park.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppText.caption,
+                  ),
+                  const SizedBox(height: 8),
+                  const Row(
+                    children: [
+                      Text(
+                        'عرض التفاصيل',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.accent,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(Icons.arrow_forward,
+                          size: 16, color: AppColors.accent),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              tooltip: 'إغلاق',
+              icon: const Icon(Icons.close, color: AppColors.textSecondary),
+              onPressed: onClose,
+            ),
+          ],
+        ),
       ),
     );
   }

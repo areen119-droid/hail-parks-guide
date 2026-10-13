@@ -17,6 +17,7 @@ class HailData {
   );
 
   // TODO: replace these example parks with the real parks and coordinates.
+  // Their photos are general Hail-region photos used only as stand-ins.
   static const List<ParkModel> parks = [
     ParkModel(
       id: 'park_1',
@@ -25,6 +26,8 @@ class HailData {
       location: 'حائل',
       latitude: 27.5236,
       longitude: 41.6966,
+      image: 'assets/images/hail_landscape.jpg',
+      gallery: ['assets/images/hail_landscape.jpg', 'assets/images/hail_rocks.jpg', 'assets/images/welcome_bg.jpg'],
       openingHours: '٤ م - ١١ م',
       facilities: ['مواقف سيارات', 'ألعاب أطفال', 'جلسات عائلية'],
     ),
@@ -35,6 +38,8 @@ class HailData {
       location: 'حائل',
       latitude: 27.5090,
       longitude: 41.7060,
+      image: 'assets/images/hail_rocks.jpg',
+      gallery: ['assets/images/hail_landscape.jpg', 'assets/images/hail_rocks.jpg', 'assets/images/welcome_bg.jpg'],
       openingHours: '٤ م - ١١ م',
       facilities: ['ممشى', 'دورات مياه'],
     ),
@@ -45,6 +50,8 @@ class HailData {
       location: 'حائل',
       latitude: 27.5400,
       longitude: 41.6800,
+      image: 'assets/images/welcome_bg.jpg',
+      gallery: ['assets/images/hail_landscape.jpg', 'assets/images/hail_rocks.jpg', 'assets/images/welcome_bg.jpg'],
     ),
   ];
 

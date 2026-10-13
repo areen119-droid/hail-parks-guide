@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/features/map/widgets/map_top_overlay.dart';
 import 'package:hail_parks_guide/features/map/widgets/park_quick_info_card.dart';
+import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -28,6 +32,17 @@ class _MapPageState extends State<MapPage> {
   void _selectPark(ParkModel park) {
     setState(() => _selectedPark = park);
     _mapController.move(LatLng(park.latitude, park.longitude), 15);
+  }
+
+  /// Focuses a park when another screen asked to "show on map".
+  void _handleFocusRequest(NavigationProvider nav) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final id = nav.takeParkToShowOnMap();
+      if (id == null) return;
+      final park = HailData.parks.where((p) => p.id == id).firstOrNull;
+      if (park != null) _selectPark(park);
+    });
   }
 
   Future<void> _goToMyLocation() async {
@@ -64,80 +79,79 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: _hailCenter,
-              initialZoom: 13,
-              onTap: (_, __) => setState(() => _selectedPark = null),
+    _handleFocusRequest(context.watch<NavigationProvider>());
+
+    return Stack(
+      children: [
+        FlutterMap(
+          mapController: _mapController,
+          options: MapOptions(
+            initialCenter: _hailCenter,
+            initialZoom: 13,
+            onTap: (_, __) => setState(() => _selectedPark = null),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.hailparksguide.app',
             ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.hailparksguide.app',
-              ),
-              MarkerLayer(
-                markers: [
-                  for (final park in HailData.parks) _buildParkMarker(park),
-                  if (_userPosition != null)
-                    Marker(
-                      point: _userPosition!,
-                      width: 22,
-                      height: 22,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.brightBlue,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.white, width: 3),
-                        ),
+            MarkerLayer(
+              markers: [
+                for (final park in HailData.parks) _buildParkMarker(park),
+                if (_userPosition != null)
+                  Marker(
+                    point: _userPosition!,
+                    width: 22,
+                    height: 22,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.location,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.white, width: 3),
                       ),
                     ),
-                ],
-              ),
-              const RichAttributionWidget(
-                alignment: AttributionAlignment.bottomLeft,
-                attributions: [
-                  TextSourceAttribution('OpenStreetMap contributors'),
-                ],
-              ),
-            ],
+                  ),
+              ],
+            ),
+            const RichAttributionWidget(
+              alignment: AttributionAlignment.bottomLeft,
+              attributions: [
+                TextSourceAttribution('OpenStreetMap contributors'),
+              ],
+            ),
+          ],
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: MapTopOverlay(
+            parks: HailData.parks,
+            selectedParkId: _selectedPark?.id,
+            onParkSelected: _selectPark,
           ),
+        ),
+        PositionedDirectional(
+          end: 16,
+          bottom: _selectedPark == null ? kNavBarSpace : kNavBarSpace + 180,
+          child: CircleIconButton(
+            icon: Icons.my_location,
+            size: 52,
+            tooltip: 'موقعي',
+            onPressed: _goToMyLocation,
+          ),
+        ),
+        if (_selectedPark != null)
           Positioned(
-            top: 0,
             left: 0,
             right: 0,
-            child: MapTopOverlay(
-              parks: HailData.parks,
-              selectedParkId: _selectedPark?.id,
-              onParkSelected: _selectPark,
+            bottom: kNavBarSpace - 16,
+            child: ParkQuickInfoCard(
+              park: _selectedPark!,
+              onClose: () => setState(() => _selectedPark = null),
             ),
           ),
-          Positioned(
-            right: 16,
-            bottom: _selectedPark == null ? 24 : 250,
-            child: FloatingActionButton(
-              heroTag: 'my_location',
-              backgroundColor: AppColors.white,
-              foregroundColor: AppColors.darkGreen,
-              onPressed: _goToMyLocation,
-              child: const Icon(Icons.my_location),
-            ),
-          ),
-          if (_selectedPark != null)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ParkQuickInfoCard(
-                park: _selectedPark!,
-                onClose: () => setState(() => _selectedPark = null),
-              ),
-            ),
-        ],
-      ),
+      ],
     );
   }
 
@@ -145,15 +159,16 @@ class _MapPageState extends State<MapPage> {
     final selected = park.id == _selectedPark?.id;
     return Marker(
       point: LatLng(park.latitude, park.longitude),
-      width: 48,
-      height: 48,
+      width: 52,
+      height: 52,
       alignment: Alignment.topCenter,
       child: GestureDetector(
         onTap: () => _selectPark(park),
         child: Icon(
           Icons.location_on,
-          size: selected ? 48 : 40,
-          color: selected ? AppColors.mediumBrown : AppColors.darkGreen,
+          size: selected ? 52 : 44,
+          color: selected ? AppColors.accent : AppColors.brown,
+          shadows: const [Shadow(color: Colors.black26, blurRadius: 6)],
         ),
       ),
     );

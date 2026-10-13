@@ -1,79 +1,110 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/core/widgets/smart_image.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
+import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/features/plants/plant_detail_screen.dart';
 import 'package:hail_parks_guide/models/plant_model.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
-class PlantsScreen extends StatelessWidget {
+class PlantsScreen extends StatefulWidget {
   const PlantsScreen({super.key});
 
   @override
+  State<PlantsScreen> createState() => _PlantsScreenState();
+}
+
+class _PlantsScreenState extends State<PlantsScreen> {
+  static const _allLabel = 'الكل';
+
+  String _query = '';
+  String _filter = _allLabel;
+
+  /// Filter chips come from the plants' types.
+  List<String> get _filters => [
+        _allLabel,
+        ...{for (final plant in HailData.plants) plant.type},
+      ];
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.creamBackground,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(child: _buildPlantsList()),
+    final plants = HailData.plants.where((plant) {
+      final matchesFilter = _filter == _allLabel || plant.type == _filter;
+      return matchesFilter && plant.name.contains(_query.trim());
+    }).toList();
+
+    return Container(
+      decoration: const BoxDecoration(gradient: AppColors.background),
+      child: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('نباتات حائل', style: AppText.display),
+                    const Text(
+                      'تعرّف على النباتات في حدائق ومتنزهات المنطقة',
+                      style: TextStyle(
+                          fontSize: 14, color: AppColors.brownMedium),
+                    ),
+                    const SizedBox(height: 16),
+                    SearchPill(
+                      hint: 'ابحث عن نبات...',
+                      onChanged: (value) => setState(() => _query = value),
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      height: 42,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _filters.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final label = _filters[index];
+                          return PillChip(
+                            label: label,
+                            selected: label == _filter,
+                            onTap: () => setState(() => _filter = label),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (plants.isEmpty)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Text('لا توجد نباتات مطابقة', style: AppText.caption),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, kNavBarSpace),
+                sliver: SliverGrid.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.78,
+                  ),
+                  itemCount: plants.length,
+                  itemBuilder: (context, index) =>
+                      _PlantCard(plant: plants[index]),
+                ),
+              ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.mediumGreen, AppColors.darkGreen],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
-        ),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            'نباتات حائل',
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'تعرف على النباتات في حدائق ومتنزهات المنطقة',
-            style: TextStyle(color: AppColors.paleGreen, fontSize: 13),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlantsList() {
-    const plants = HailData.plants;
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.8,
-      ),
-      itemCount: plants.length,
-      itemBuilder: (context, index) => _PlantCard(plant: plants[index]),
     );
   }
 }
@@ -93,82 +124,51 @@ class _PlantCard extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (_) => PlantDetailScreen(plant: plant)),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.darkGreen.withOpacity(0.08),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: SmartImage(
-                    imageData: plant.image,
-                    height: 120,
-                    width: double.infinity,
-                  ),
+            SmartImage(imageData: plant.image),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x00000000), Color(0xB3000000)],
+                  stops: [0.5, 1.0],
                 ),
-                Positioned(
-                  top: 6,
-                  left: 6,
-                  child: GestureDetector(
-                    onTap: () => favorites.togglePlant(plant.id),
-                    child: CircleAvatar(
-                      radius: 16,
-                      backgroundColor: AppColors.white.withOpacity(0.9),
-                      child: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        size: 18,
-                        color: AppColors.errorRed,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10),
+            PositionedDirectional(
+              top: 8,
+              end: 8,
+              child: CircleIconButton(
+                icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                iconColor: isFavorite ? AppColors.error : AppColors.brown,
+                size: 36,
+                tooltip: 'المفضلة',
+                onPressed: () => favorites.togglePlant(plant.id),
+              ),
+            ),
+            PositionedDirectional(
+              start: 12,
+              end: 12,
+              bottom: 12,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     plant.name,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: AppColors.darkText,
+                      color: AppColors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 4),
                   Text(
                     plant.type,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.mediumGreen,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    plant.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.mediumGrey,
-                    ),
+                    style: const TextStyle(color: AppColors.chip, fontSize: 12),
                   ),
                 ],
               ),

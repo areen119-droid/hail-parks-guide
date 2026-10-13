@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/models/park_model.dart';
 
-/// Title bar over the map with a scrollable row of park chips.
+/// Title and a scrollable row of park chips over the map.
 class MapTopOverlay extends StatelessWidget {
   final List<ParkModel> parks;
   final String? selectedParkId;
@@ -17,69 +19,60 @@ class MapTopOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-        decoration: BoxDecoration(
-          color: AppColors.creamBackground.withOpacity(0.95),
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            AppColors.sand,
+            AppColors.sandLight.withValues(alpha: 0.9),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const Text(
-              'حدائق حائل',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.darkGreen,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brown.withValues(alpha: 0.12),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'خريطة الحدائق',
+                style: TextStyle(
+                  fontFamily: AppText.headingFont,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 38,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                reverse: true, // start from the right for Arabic
-                itemCount: parks.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final park = parks[index];
-                  final selected = park.id == selectedParkId;
-                  return ChoiceChip(
-                    label: Text(park.name),
-                    selected: selected,
-                    onSelected: (_) => onParkSelected(park),
-                    showCheckmark: false,
-                    avatar: Icon(
-                      Icons.park,
-                      size: 16,
-                      color: selected ? AppColors.white : AppColors.darkGreen,
-                    ),
-                    selectedColor: AppColors.darkGreen,
-                    backgroundColor: AppColors.white,
-                    labelStyle: TextStyle(
-                      color: selected ? AppColors.white : AppColors.darkText,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    side: const BorderSide(color: AppColors.paleGreen),
-                  );
-                },
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 42,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: parks.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final park = parks[index];
+                    return PillChip(
+                      label: park.name,
+                      selected: park.id == selectedParkId,
+                      onTap: () => onParkSelected(park),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

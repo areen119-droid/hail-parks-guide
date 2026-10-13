@@ -1,259 +1,116 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_color.dart';
-import '../../../core/widgets/curved_header.dart';
+import 'package:hail_parks_guide/app/theme.dart';
+import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
 
+  static const _team = [
+    'أرين إبراهيم الفقيه',
+    'رهف الضمادي',
+    'ريم الفهيد',
+    'فوزيه القحطاني',
+    'العنود الصقيه',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.whiteColor,
-      appBar: AppBar(
-        title: Text(
-          'عن التطبيق',
-          style: TextStyle(
-            color: AppColors.baseDarkGreenColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: AppColors.baseDarkGreenColor),
-      ),
-      body: Stack(
+      body: ListView(
+        padding: EdgeInsets.zero,
         children: [
-          // Curved Header
-          const CurvedHeader(height: 200),
-
-          // Content
-          SingleChildScrollView(
-            child: Column(
+          SizedBox(
+            height: 300,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                const SizedBox(height: 120),
-
-                // Logo
-                Center(
-                  child: CircleAvatar(
-                    radius: 56,
-                    backgroundColor: AppColors.softMint,
-                    child: Icon(Icons.park,
-                        size: 64, color: AppColors.baseDarkGreenColor),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // App Name
-                Text(
-                  'Hail Parks Guide',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.white,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Tagline
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                Image.asset('assets/images/hail_landscape.jpg', fit: BoxFit.cover),
+                const DecoratedBox(
                   decoration: BoxDecoration(
-                    color: AppColors.softMint,
-                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x33000000), AppColors.sandLight],
+                      stops: [0.4, 1.0],
+                    ),
                   ),
+                ),
+                SafeArea(
+                  child: Align(
+                    alignment: AlignmentDirectional.topStart,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: CircleIconButton(
+                        icon: Icons.arrow_back,
+                        tooltip: 'رجوع',
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ),
+                ),
+                const PositionedDirectional(
+                  start: 20,
+                  bottom: 8,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('دليل حدائق حائل', style: AppText.display),
+                      Text(
+                        'Hail Parks Guide · الإصدار 1.0.0',
+                        style: AppText.caption,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            color: AppColors.sandLight,
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const _Card(
+                  title: 'عن التطبيق',
                   child: Text(
-                    'دليلك إلى حدائق حائل',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.baseDarkGreenColor,
-                      fontStyle: FontStyle.italic,
-                    ),
+                    'دليل حدائق حائل تطبيق يساعد الزوار والسياح على اكتشاف حدائق '
+                    'ومتنزهات منطقة حائل. يعرض التطبيق مواقع الحدائق على الخريطة مع '
+                    'معلومات عن كل حديقة ومرافقها، ويعرّف بالنباتات المحلية والنباتات '
+                    'المزروعة في المنطقة.\n\nيمكنك حفظ حدائقك ونباتاتك المفضلة في ملفك '
+                    'الشخصي للرجوع إليها في أي وقت.',
+                    style: AppText.body,
                   ),
                 ),
-
-                const SizedBox(height: 32),
-
-                // About Section
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.softMint,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
+                _Card(
+                  title: 'فريق العمل',
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final name in _team)
+                        Chip(
+                          label: Text(name),
+                          backgroundColor: AppColors.sandLight,
+                          side: BorderSide.none,
+                          shape: const StadiumBorder(),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 5,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: AppColors.vibrantGreen,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'من نحن',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.baseDarkGreenColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Text(
-                            'دليل حدائق حائل تطبيق يساعد الزوار والسياح على اكتشاف حدائق ومتنزهات منطقة حائل. '
-                                'يعرض التطبيق مواقع الحدائق على الخريطة مع معلومات عن كل حديقة ومرافقها، '
-                                'ويعرّف بالنباتات المحلية والنباتات المزروعة في المنطقة.\n\n'
-                                'يمكنك حفظ حدائقك ونباتاتك المفضلة في ملفك الشخصي للرجوع إليها في أي وقت.',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: AppColors.baseBlackColor,
-                              height: 1.6,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                // Team Section - Names Side by Side in One Row (Centered)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.softMint,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 5,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: AppColors.lightGreen,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'فريق العمل',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.baseDarkGreenColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Centered names
-                        Center(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildTeamName('أرين إبراهيم الفقيه', AppColors.tealGreen),
-                                const SizedBox(width: 12),
-                                _buildTeamName('رهف الضمادي', AppColors.tealGreen),
-                                const SizedBox(width: 12),
-                                _buildTeamName('ريم الفهيد', AppColors.tealGreen),
-                                const SizedBox(width: 12),
-                                _buildTeamName('فوزيه القحطاني', AppColors.tealGreen),
-                                const SizedBox(width: 12),
-                                _buildTeamName('العنود الصقيه', AppColors.tealGreen),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Credits Section
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: AppColors.softMint,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'المصادر',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.baseDarkGreenColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'الخرائط: © OpenStreetMap contributors\n'
-                          'صور السدر والطلح والأرطى: Krzysztof Ziarnek (Kenraiz)، '
-                          'Wikimedia Commons، رخصة CC BY-SA 4.0',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 12, height: 1.6),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // Version
-                Center(
+                const _Card(
+                  title: 'المصادر',
                   child: Text(
-                    'الإصدار 1.0.0',
-                    style: TextStyle(
-                      color: AppColors.mediumGrey,
-                      fontSize: 12,
-                    ),
+                    'الخرائط: © OpenStreetMap contributors\n'
+                    'صور منطقة حائل (جبال المسمى، محمية الملك سلمان): '
+                    'وكالة الأنباء السعودية (SPA)، Wikimedia Commons، رخصة CC BY-SA 4.0\n'
+                    'صور السدر والطلح والأرطى: Krzysztof Ziarnek (Kenraiz)، '
+                    'Wikimedia Commons، رخصة CC BY-SA 4.0\n'
+                    'الخطوط: Amiri و Tajawal، رخصة SIL Open Font License',
+                    style: TextStyle(fontSize: 12, height: 1.8, color: AppColors.textSecondary),
                   ),
                 ),
-
-                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -261,23 +118,31 @@ class AboutUsScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildTeamName(String name, Color color) {
+class _Card extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _Card({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color, width: 1),
+        color: AppColors.cream,
+        borderRadius: BorderRadius.circular(24),
       ),
-      child: Text(
-        name,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-        textAlign: TextAlign.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: AppText.section),
+          const SizedBox(height: 10),
+          child,
+        ],
       ),
     );
   }

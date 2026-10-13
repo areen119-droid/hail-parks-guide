@@ -20,72 +20,54 @@ class PlantsWidget extends StatelessWidget {
         MaterialPageRoute(builder: (_) => PlantDetailScreen(plant: plant)),
       ),
       child: Container(
-        height: 130,
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.darkGreen.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(24),
         ),
         child: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 12),
-              child: Icon(Icons.chevron_left, color: AppColors.mediumGrey),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'نبتة اليوم',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.mediumGreen,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      plant.name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.darkText,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      plant.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.mediumGrey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.horizontal(right: Radius.circular(18)),
-              child: SmartImage(
-                imageData: plant.image,
-                width: 120,
-                height: 130,
+              borderRadius: BorderRadius.circular(18),
+              child: SmartImage(imageData: plant.image, width: 96, height: 96),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    plant.type,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.plantGreen,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    plant.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    plant.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
               ),
             ),
+            const Icon(Icons.chevron_left, color: AppColors.textSecondary),
           ],
         ),
       ),
