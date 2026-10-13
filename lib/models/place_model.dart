@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 enum PlaceCategory {
   park('حدائق ومتنزهات', Icons.park),
   nature('جبال وطبيعة', Icons.terrain),
-  heritage('تراث وتاريخ', Icons.account_balance);
+  heritage('تراث وتاريخ', Icons.account_balance),
+  restaurant('مطاعم', Icons.restaurant),
+  cafe('مقاهي', Icons.local_cafe);
 
   final String label;
   final IconData icon;

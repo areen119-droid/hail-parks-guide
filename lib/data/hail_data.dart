@@ -240,6 +240,127 @@ class HailData {
           'فيها.',
       location: 'مدينة حائل',
     ),
+
+    // Added parks and nature
+    PlaceModel(
+      id: 'samra_park',
+      name: 'منتزه السمراء',
+      category: PlaceCategory.park,
+      description:
+          'منتزه على سفح جبل السمراء في وسط حائل، يضم بحيرات وشلالات '
+          'ومسطحات خضراء وألعابًا للأطفال، إلى جانب مطاعم ومقاهٍ وجلسات.',
+      location: 'سفح جبل السمراء، وسط حائل',
+      latitude: 27.52162,
+      longitude: 41.72335,
+      image: 'assets/places/samra_1.jpg',
+      facilities: ['بحيرات وشلالات', 'ألعاب أطفال', 'مطاعم ومقاهٍ', 'مسطحات خضراء'],
+    ),
+    PlaceModel(
+      id: 'mashar',
+      name: 'منتزه مشار الوطني',
+      category: PlaceCategory.park,
+      description:
+          'أحد المنتزهات الوطنية في منطقة حائل، يقع في منطقة مشار بين جبال أجا '
+          'شمال غرب المدينة، ويتميز بطبيعته الجبلية وأشجاره، ومناسب للنزهات '
+          'والتخييم.',
+      location: 'مشار، شمال غرب حائل',
+      latitude: 27.57656,
+      longitude: 41.62865,
+    ),
+    PlaceModel(
+      id: 'iqdah',
+      name: 'قرية عقدة',
+      category: PlaceCategory.nature,
+      description:
+          'قرية سياحية في جبال أجا غرب حائل، تشتهر بطبيعتها الجميلة وجلساتها '
+          'وألعاب الأطفال، ويمكن فيها مشاهدة الطيور.',
+      location: 'جبال أجا، غرب حائل',
+      latitude: 27.51574,
+      longitude: 41.60128,
+    ),
+    PlaceModel(
+      id: 'hatem_view',
+      name: 'إطلالة حاتم',
+      category: PlaceCategory.nature,
+      description:
+          'مطل على قمة جبل السمراء يرتبط باسم حاتم الطائي، الذي كان يوقد النار '
+          'عليه لإرشاد المسافرين. يوفر إطلالة واسعة على مدينة حائل، ومن أجمل '
+          'أماكن مشاهدة الغروب.',
+      location: 'قمة جبل السمراء، حائل',
+      latitude: 27.5228,
+      longitude: 41.7356,
+      image: 'assets/places/samra_1.jpg',
+    ),
+
+    // Restaurants
+    // TODO: add each restaurant's food type and location (Google Maps link).
+    PlaceModel(
+      id: 'loft',
+      name: 'Loft',
+      category: PlaceCategory.restaurant,
+      description: 'مطعم في مدينة حائل.',
+      location: 'مدينة حائل',
+    ),
+    PlaceModel(
+      id: 'me_gusta',
+      name: 'Me Gusta',
+      category: PlaceCategory.restaurant,
+      description: 'مطعم في مدينة حائل.',
+      location: 'مدينة حائل',
+    ),
+    PlaceModel(
+      id: 'rogaruka',
+      name: 'RogaRuka',
+      category: PlaceCategory.restaurant,
+      description: 'مطعم في مدينة حائل.',
+      location: 'مدينة حائل',
+    ),
+    PlaceModel(
+      id: 'opalo',
+      name: 'Opalo',
+      category: PlaceCategory.restaurant,
+      description: 'مطعم في مدينة حائل.',
+      location: 'مدينة حائل',
+    ),
+
+    // Cafes
+    PlaceModel(
+      id: 'camel_step',
+      name: 'Camel Step خطوة جمل',
+      category: PlaceCategory.cafe,
+      description:
+          'فرع حائل من محمصة القهوة المختصة السعودية، في مبنى قديم أعيد '
+          'تجديده بحجر الجرانيت المحلي من حائل، بجلسات داخلية وفناء.',
+      location: 'حي البحيرة، حائل',
+    ),
+    PlaceModel(
+      id: 'aladham',
+      name: 'الأدهم',
+      category: PlaceCategory.cafe,
+      description: 'مقهى في حائل بطابع يجمع بين الخيل والقهوة.',
+      location: 'مدينة حائل',
+    ),
+    PlaceModel(
+      id: 'osol',
+      name: 'أصول Osol',
+      category: PlaceCategory.cafe,
+      description: 'مقهى في مدينة حائل.',
+      location: 'مدينة حائل',
+    ),
+    PlaceModel(
+      id: 'namq',
+      name: 'نمق Namq',
+      category: PlaceCategory.cafe,
+      description: 'مقهى في مدينة حائل.',
+      location: 'مدينة حائل',
+    ),
+    PlaceModel(
+      id: 'blunt',
+      name: 'Blunt',
+      category: PlaceCategory.cafe,
+      description: 'مقهى في مدينة حائل.',
+      location: 'مدينة حائل',
+    ),
   ];
 
   static const List<Plant> plants = [
