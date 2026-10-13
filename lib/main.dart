@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
-import 'package:hail_parks_guide/core/splashScreen/splash_screen.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.darkGreen),
         scaffoldBackgroundColor: AppColors.creamBackground,
       ),
-      home: const SplashScreen(),
+      home: const MainNavigation(),
       routes: {
         '/home': (context) => const MainNavigation(),
       },
