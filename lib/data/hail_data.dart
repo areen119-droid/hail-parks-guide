@@ -16,8 +16,7 @@ class HailData {
     bio: 'أحب استكشاف حدائق حائل ونباتاتها',
   );
 
-  // Parks without a known exact location have no coordinates yet:
-  // they are listed in the app but not shown on the map.
+  // A place without coordinates is listed in the app but not shown on the map.
   static const List<PlaceModel> places = [
     // Parks
     PlaceModel(
@@ -28,6 +27,8 @@ class HailData {
           'من أشهر منتزهات حائل، تبلغ مساحته نحو 350 ألف متر مربع. يضم مسطحات '
           'خضراء ونخيلًا وأشجارًا متنوعة وبحيرات وشلالات، إلى جانب مطاعم ومقاهٍ.',
       location: 'مدينة حائل',
+      latitude: 27.5540989,
+      longitude: 41.6891688,
       facilities: ['مسطحات خضراء', 'بحيرات وشلالات', 'مطاعم ومقاهٍ'],
     ),
     PlaceModel(
@@ -36,6 +37,8 @@ class HailData {
       category: PlaceCategory.park,
       description: 'حديقة في مدينة حائل.',
       location: 'مدينة حائل',
+      latitude: 27.545157,
+      longitude: 41.6638396,
     ),
     PlaceModel(
       id: 'al_wurud_park',
@@ -43,6 +46,8 @@ class HailData {
       category: PlaceCategory.park,
       description: 'منتزه في حي الورود بالقرب من بحيرة أجا.',
       location: 'حي الورود، حائل',
+      latitude: 27.5305856,
+      longitude: 41.6666435,
     ),
 
     // Mountains and nature
@@ -239,6 +244,8 @@ class HailData {
           'الحجرية حتى العصر الحديث، وتراثها وحرفها التقليدية وبدايات التعليم '
           'فيها.',
       location: 'مدينة حائل',
+      latitude: 27.4771605,
+      longitude: 41.6978547,
     ),
 
     // Added parks and nature
@@ -351,11 +358,12 @@ class HailData {
       id: 'uzbek_rice',
       name: 'أوزبك للرز البخاري',
       category: PlaceCategory.restaurant,
-      description: 'مطعم مشهور في حائل متخصص في الرز البخاري.',
+      description:
+          'مطعم مشهور في حائل متخصص في الرز البخاري، ومناسب للعائلات. يحظى بإقبال كبير والجلسات فيه محدودة وغالبًا ممتلئة، لذا يفضّل الطلب سفري.',
       location: 'مدينة حائل',
       latitude: 27.5235395,
       longitude: 41.655508,
-      facilities: ['رز بخاري'],
+      facilities: ['رز بخاري', 'مناسب للعائلات', 'مزدحم غالبًا', 'طلبات سفري'],
     ),
 
     // Cafes
