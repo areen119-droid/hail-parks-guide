@@ -15,7 +15,7 @@ class SettingsScreen extends StatelessWidget {
     final confirmed = await showConfirmationDialog(
       context,
       title: 'مسح المفضلة',
-      message: 'هل تريد إزالة جميع الحدائق والنباتات من المفضلة؟',
+      message: 'هل تريد إزالة جميع الأماكن والنباتات من المفضلة؟',
       confirmLabel: 'مسح',
     );
     if (confirmed) await favorites.clearAll();

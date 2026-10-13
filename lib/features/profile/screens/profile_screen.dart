@@ -6,7 +6,7 @@ import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/core/widgets/smart_image.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
-import 'package:hail_parks_guide/features/parks/park_detail_screen.dart';
+import 'package:hail_parks_guide/features/places/place_detail_screen.dart';
 import 'package:hail_parks_guide/features/plants/plant_detail_screen.dart';
 import 'package:hail_parks_guide/features/settings/screens/settings_screen.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
@@ -19,25 +19,25 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _showParks = true;
+  bool _showPlaces = true;
 
   @override
   Widget build(BuildContext context) {
     final favorites = context.watch<FavoritesProvider>();
-    final parks = favorites.favoriteParks;
+    final places = favorites.favoritePlaces;
     final plants = favorites.favoritePlants;
     const user = HailData.currentUser;
 
-    final List<_FavoriteItem> items = _showParks
+    final List<_FavoriteItem> items = _showPlaces
         ? [
-            for (final park in parks)
+            for (final place in places)
               _FavoriteItem(
-                title: park.name,
-                subtitle: park.location,
-                image: park.image,
-                icon: Icons.park,
-                open: () => ParkDetailScreen(park: park),
-                remove: () => favorites.togglePark(park.id),
+                title: place.name,
+                subtitle: place.category.label,
+                image: place.image,
+                icon: place.category.icon,
+                open: () => PlaceDetailScreen(place: place),
+                remove: () => favorites.togglePlace(place.id),
               ),
           ]
         : [
@@ -110,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Row(
                 children: [
-                  _Stat(value: '${parks.length}', label: 'حدائق مفضلة'),
+                  _Stat(value: '${places.length}', label: 'أماكن مفضلة'),
                   Container(width: 1, height: 36, color: AppColors.divider),
                   _Stat(value: '${plants.length}', label: 'نباتات مفضلة'),
                 ],
@@ -120,15 +120,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               children: [
                 PillChip(
-                  label: 'الحدائق',
-                  selected: _showParks,
-                  onTap: () => setState(() => _showParks = true),
+                  label: 'الأماكن',
+                  selected: _showPlaces,
+                  onTap: () => setState(() => _showPlaces = true),
                 ),
                 const SizedBox(width: 8),
                 PillChip(
                   label: 'النباتات',
-                  selected: !_showParks,
-                  onTap: () => setState(() => _showParks = false),
+                  selected: !_showPlaces,
+                  onTap: () => setState(() => _showPlaces = false),
                 ),
               ],
             ),
@@ -146,8 +146,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         size: 36, color: AppColors.textSecondary),
                     const SizedBox(height: 8),
                     Text(
-                      _showParks
-                          ? 'اضغط ♡ على أي حديقة لإضافتها هنا'
+                      _showPlaces
+                          ? 'اضغط ♡ على أي مكان لإضافته هنا'
                           : 'اضغط ♡ على أي نبتة لإضافتها هنا',
                       textAlign: TextAlign.center,
                       style: AppText.caption,

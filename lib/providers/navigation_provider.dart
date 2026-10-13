@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 /// Bottom navigation state, so any screen can switch tabs or
-/// ask the map to show a specific park.
+/// ask the map to show a specific place.
 class NavigationProvider extends ChangeNotifier {
   static const int homeTab = 0;
   static const int mapTab = 1;
@@ -9,7 +9,7 @@ class NavigationProvider extends ChangeNotifier {
   static const int profileTab = 3;
 
   int _tabIndex = homeTab;
-  String? _parkToShowOnMap;
+  String? _placeToShowOnMap;
 
   int get tabIndex => _tabIndex;
 
@@ -19,17 +19,17 @@ class NavigationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Opens the map tab centered on [parkId].
-  void showParkOnMap(String parkId) {
-    _parkToShowOnMap = parkId;
+  /// Opens the map tab centered on [placeId].
+  void showPlaceOnMap(String placeId) {
+    _placeToShowOnMap = placeId;
     _tabIndex = mapTab;
     notifyListeners();
   }
 
-  /// Returns the park the map should focus on, once.
-  String? takeParkToShowOnMap() {
-    final id = _parkToShowOnMap;
-    _parkToShowOnMap = null;
+  /// Returns the place the map should focus on, once.
+  String? takePlaceToShowOnMap() {
+    final id = _placeToShowOnMap;
+    _placeToShowOnMap = null;
     return id;
   }
 }

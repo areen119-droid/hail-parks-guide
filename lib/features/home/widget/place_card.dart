@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/utils/helpers.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
-import 'package:hail_parks_guide/core/widgets/smart_image.dart';
-import 'package:hail_parks_guide/features/parks/park_detail_screen.dart';
-import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/features/places/place_detail_screen.dart';
+import 'package:hail_parks_guide/features/places/place_image.dart';
+import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
-/// Large photo card for a park with its name over the image.
-class ParkCard extends StatelessWidget {
-  final ParkModel park;
+/// Large photo card for a place with its name over the image.
+class PlaceCard extends StatelessWidget {
+  final PlaceModel place;
 
-  const ParkCard({super.key, required this.park});
+  const PlaceCard({super.key, required this.place});
 
   @override
   Widget build(BuildContext context) {
     final favorites = context.watch<FavoritesProvider>();
-    final isFavorite = favorites.isFavoritePark(park.id);
+    final isFavorite = favorites.isFavoritePlace(place.id);
+    final distance = distanceFromHailLabel(place);
 
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => ParkDetailScreen(park: park)),
+        MaterialPageRoute(builder: (_) => PlaceDetailScreen(place: place)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
@@ -30,7 +32,7 @@ class ParkCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              SmartImage(imageData: park.image, placeholderIcon: Icons.park),
+              PlaceImage(place: place),
               const DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -49,15 +51,17 @@ class ParkCard extends StatelessWidget {
                   iconColor: isFavorite ? AppColors.error : AppColors.brown,
                   size: 40,
                   tooltip: 'المفضلة',
-                  onPressed: () => favorites.togglePark(park.id),
+                  onPressed: () => favorites.togglePlace(place.id),
                 ),
               ),
-              if (park.openingHours.isNotEmpty)
-                PositionedDirectional(
-                  top: 14,
-                  start: 14,
-                  child: _Badge(icon: Icons.access_time, text: park.openingHours),
+              PositionedDirectional(
+                top: 14,
+                start: 14,
+                child: _Badge(
+                  icon: place.category.icon,
+                  text: place.category.label,
                 ),
+              ),
               PositionedDirectional(
                 start: 18,
                 end: 18,
@@ -66,7 +70,7 @@ class ParkCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      park.name,
+                      place.name,
                       style: const TextStyle(
                         color: AppColors.white,
                         fontSize: 20,
@@ -79,10 +83,15 @@ class ParkCard extends StatelessWidget {
                         const Icon(Icons.location_on,
                             size: 14, color: AppColors.chip),
                         const SizedBox(width: 4),
-                        Text(
-                          park.location,
-                          style: const TextStyle(
-                              color: AppColors.chip, fontSize: 13),
+                        Flexible(
+                          child: Text(
+                            distance == null
+                                ? place.location
+                                : '${place.location} · $distance',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                color: AppColors.chip, fontSize: 13),
+                          ),
                         ),
                       ],
                     ),

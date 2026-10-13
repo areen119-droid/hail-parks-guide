@@ -5,11 +5,11 @@ import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/features/home/widget/facts_widget.dart';
-import 'package:hail_parks_guide/features/home/widget/park_card.dart';
+import 'package:hail_parks_guide/features/home/widget/place_card.dart';
 import 'package:hail_parks_guide/features/home/widget/plants_widget.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/features/settings/screens/settings_screen.dart';
-import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,24 +20,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const _allLabel = 'الكل';
-
   String _query = '';
-  String _filter = _allLabel;
-
-  /// Filter chips come from the parks' facilities.
-  List<String> get _filters => [
-        _allLabel,
-        ...{for (final park in HailData.parks) ...park.facilities},
-      ];
+  PlaceCategory? _category; // null shows all categories
 
   @override
   Widget build(BuildContext context) {
-    final parks = HailData.parks.where((park) {
-      final matchesFilter =
-          _filter == _allLabel || park.facilities.contains(_filter);
-      final matchesQuery = park.name.contains(_query.trim());
-      return matchesFilter && matchesQuery;
+    final places = HailData.places.where((place) {
+      final matchesCategory = _category == null || place.category == _category;
+      final matchesQuery = place.name.contains(_query.trim());
+      return matchesCategory && matchesQuery;
     }).toList();
 
     return Container(
@@ -47,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(child: _buildTop(context)),
-            SliverToBoxAdapter(child: _buildPanel(context, parks)),
+            SliverToBoxAdapter(child: _buildPanel(context, places)),
           ],
         ),
       ),
@@ -100,30 +91,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 18),
           SearchPill(
-            hint: 'ابحث عن حديقة...',
+            hint: 'ابحث عن مكان...',
             onChanged: (value) => setState(() => _query = value),
           ),
           const SizedBox(height: 22),
           const Text('اكتشف', style: AppText.display),
           const Text(
-            'أجمل الحدائق والمتنزهات في حائل',
+            'أجمل الأماكن والمعالم في منطقة حائل',
             style: TextStyle(fontSize: 14, color: AppColors.brownMedium),
           ),
           const SizedBox(height: 16),
           SizedBox(
             height: 42,
-            child: ListView.separated(
+            child: ListView(
               scrollDirection: Axis.horizontal,
-              itemCount: _filters.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final label = _filters[index];
-                return PillChip(
-                  label: label,
-                  selected: label == _filter,
-                  onTap: () => setState(() => _filter = label),
-                );
-              },
+              children: [
+                PillChip(
+                  label: 'الكل',
+                  selected: _category == null,
+                  onTap: () => setState(() => _category = null),
+                ),
+                for (final c in PlaceCategory.values) ...[
+                  const SizedBox(width: 8),
+                  PillChip(
+                    label: c.label,
+                    selected: _category == c,
+                    onTap: () => setState(() => _category = c),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
@@ -131,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPanel(BuildContext context, List<ParkModel> parks) {
+  Widget _buildPanel(BuildContext context, List<PlaceModel> places) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, kNavBarSpace),
       decoration: const BoxDecoration(
@@ -153,25 +149,25 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 16),
           SectionHeader(
-            title: 'الحدائق',
+            title: _category?.label ?? 'أماكن حائل',
             actionLabel: 'عرض على الخريطة',
             onAction: () => context
                 .read<NavigationProvider>()
                 .selectTab(NavigationProvider.mapTab),
           ),
           const SizedBox(height: 14),
-          if (parks.isEmpty)
+          if (places.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: Text('لا توجد حدائق مطابقة', style: AppText.caption),
+                child: Text('لا توجد أماكن مطابقة', style: AppText.caption),
               ),
             )
           else
-            for (final park in parks)
+            for (final place in places)
               Padding(
                 padding: const EdgeInsets.only(bottom: 14),
-                child: ParkCard(park: park),
+                child: PlaceCard(place: place),
               ),
           const SizedBox(height: 10),
           const SectionHeader(title: 'نبتة اليوم'),

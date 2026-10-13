@@ -1,45 +1,45 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
-import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/models/plant_model.dart';
 
-/// Favorite parks and plants, saved on the device.
+/// Favorite places and plants, saved on the device.
 class FavoritesProvider extends ChangeNotifier {
-  static const _parksKey = 'favorite_parks';
+  static const _placesKey = 'favorite_places';
   static const _plantsKey = 'favorite_plants';
 
-  final Set<String> _parkIds = {};
+  final Set<String> _placeIds = {};
   final Set<String> _plantIds = {};
 
   FavoritesProvider() {
     _load();
   }
 
-  List<ParkModel> get favoriteParks =>
-      HailData.parks.where((park) => _parkIds.contains(park.id)).toList();
+  List<PlaceModel> get favoritePlaces =>
+      HailData.places.where((place) => _placeIds.contains(place.id)).toList();
 
   List<Plant> get favoritePlants =>
       HailData.plants.where((plant) => _plantIds.contains(plant.id)).toList();
 
-  bool isFavoritePark(String id) => _parkIds.contains(id);
+  bool isFavoritePlace(String id) => _placeIds.contains(id);
   bool isFavoritePlant(String id) => _plantIds.contains(id);
 
-  void togglePark(String id) => _toggle(_parkIds, id, _parksKey);
+  void togglePlace(String id) => _toggle(_placeIds, id, _placesKey);
   void togglePlant(String id) => _toggle(_plantIds, id, _plantsKey);
 
   Future<void> clearAll() async {
-    _parkIds.clear();
+    _placeIds.clear();
     _plantIds.clear();
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_parksKey);
+    await prefs.remove(_placesKey);
     await prefs.remove(_plantsKey);
   }
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    _parkIds.addAll(prefs.getStringList(_parksKey) ?? []);
+    _placeIds.addAll(prefs.getStringList(_placesKey) ?? []);
     _plantIds.addAll(prefs.getStringList(_plantsKey) ?? []);
     notifyListeners();
   }

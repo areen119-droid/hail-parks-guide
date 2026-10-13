@@ -47,13 +47,13 @@ class SplashScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   const Text(
-                    'اكتشف أجمل\nحدائق حائل',
+                    'اكتشف أجمل\nأماكن حائل',
                     textAlign: TextAlign.center,
                     style: AppText.display,
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'حدائق ومتنزهات ونباتات المنطقة\nفي دليل واحد',
+                    'حدائق وجبال ومعالم تراثية\nفي دليل واحد',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,

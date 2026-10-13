@@ -4,36 +4,43 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/utils/helpers.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
-import 'package:hail_parks_guide/core/widgets/smart_image.dart';
-import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/features/places/place_image.dart';
+import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
-class ParkDetailScreen extends StatefulWidget {
-  final ParkModel park;
+class PlaceDetailScreen extends StatefulWidget {
+  final PlaceModel place;
 
-  const ParkDetailScreen({super.key, required this.park});
+  const PlaceDetailScreen({super.key, required this.place});
 
   @override
-  State<ParkDetailScreen> createState() => _ParkDetailScreenState();
+  State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
 }
 
-class _ParkDetailScreenState extends State<ParkDetailScreen> {
-  static const _tabs = ['نبذة', 'المرافق', 'الموقع'];
+class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   int _tab = 0;
 
-  ParkModel get park => widget.park;
+  PlaceModel get place => widget.place;
+
+  /// Tabs shown for this place: facilities and location only when known.
+  List<String> get _tabs => [
+        'نبذة',
+        if (place.facilities.isNotEmpty) 'المرافق',
+        if (place.hasLocation) 'الموقع',
+      ];
 
   void _showOnMap() {
-    context.read<NavigationProvider>().showParkOnMap(park.id);
+    context.read<NavigationProvider>().showPlaceOnMap(place.id);
     Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   @override
   Widget build(BuildContext context) {
     final favorites = context.watch<FavoritesProvider>();
-    final isFavorite = favorites.isFavoritePark(park.id);
+    final isFavorite = favorites.isFavoritePlace(place.id);
 
     return Scaffold(
       body: Container(
@@ -41,7 +48,7 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
         child: SafeArea(
           bottom: false,
           child: ListView(
-            padding: const EdgeInsets.only(bottom: 120),
+            padding: EdgeInsets.only(bottom: place.hasLocation ? 120 : 32),
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
@@ -57,7 +64,7 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
                       icon: isFavorite ? Icons.favorite : Icons.favorite_border,
                       iconColor: isFavorite ? AppColors.error : AppColors.brown,
                       tooltip: 'المفضلة',
-                      onPressed: () => favorites.togglePark(park.id),
+                      onPressed: () => favorites.togglePlace(place.id),
                     ),
                   ],
                 ),
@@ -67,13 +74,13 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(park.name, style: AppText.title),
+                    Text(place.name, style: AppText.title),
                     Row(
                       children: [
                         const Icon(Icons.location_on,
                             size: 16, color: AppColors.accent),
                         const SizedBox(width: 4),
-                        Text(park.location, style: AppText.caption),
+                        Text(place.location, style: AppText.caption),
                       ],
                     ),
                   ],
@@ -83,11 +90,10 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(28),
-                  child: SmartImage(
-                    imageData: park.image,
+                  child: PlaceImage(
+                    place: place,
                     height: 230,
                     width: double.infinity,
-                    placeholderIcon: Icons.park,
                   ),
                 ),
               ),
@@ -99,14 +105,18 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-        child: PrimaryButton(label: 'عرض على الخريطة', onPressed: _showOnMap),
-      ),
+      bottomNavigationBar: place.hasLocation
+          ? SafeArea(
+              minimum: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              child: PrimaryButton(
+                  label: 'عرض على الخريطة', onPressed: _showOnMap),
+            )
+          : null,
     );
   }
 
   Widget _buildPanel() {
+    final distance = distanceFromHailLabel(place);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12),
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
@@ -120,27 +130,29 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
           Row(
             children: [
               _Stat(
+                icon: place.category.icon,
+                value: place.category.label,
+                label: 'التصنيف',
+              ),
+              _Stat(
+                icon: Icons.near_me_outlined,
+                value: distance ?? '—',
+                label: 'المسافة من حائل',
+              ),
+              _Stat(
                 icon: Icons.access_time,
-                value: park.openingHours.isEmpty ? '—' : park.openingHours,
+                value: place.openingHours.isEmpty ? '—' : place.openingHours,
                 label: 'ساعات العمل',
-              ),
-              _Stat(
-                icon: Icons.local_activity_outlined,
-                value: '${park.facilities.length}',
-                label: 'المرافق',
-              ),
-              _Stat(
-                icon: Icons.location_city,
-                value: park.location,
-                label: 'المدينة',
               ),
             ],
           ),
           const SizedBox(height: 18),
-          _buildTabs(),
-          const SizedBox(height: 14),
+          if (_tabs.length > 1) ...[
+            _buildTabs(),
+            const SizedBox(height: 14),
+          ],
           _buildTabContent(),
-          if (park.gallery.isNotEmpty) ...[
+          if (place.gallery.isNotEmpty) ...[
             const SizedBox(height: 20),
             const SectionHeader(title: 'الصور'),
             const SizedBox(height: 10),
@@ -148,12 +160,13 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
               height: 86,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: park.gallery.length,
+                itemCount: place.gallery.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 10),
                 itemBuilder: (context, index) => ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: SmartImage(
-                    imageData: park.gallery[index],
+                  child: PlaceImage(
+                    place: place,
+                    image: place.gallery[index],
                     width: 100,
                     height: 86,
                   ),
@@ -167,13 +180,14 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
   }
 
   Widget _buildTabs() {
+    final tabs = _tabs;
     return Container(
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.divider)),
       ),
       child: Row(
         children: [
-          for (var i = 0; i < _tabs.length; i++)
+          for (var i = 0; i < tabs.length; i++)
             Expanded(
               child: InkWell(
                 onTap: () => setState(() => _tab = i),
@@ -188,7 +202,7 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
                     ),
                   ),
                   child: Text(
-                    _tabs[i],
+                    tabs[i],
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -207,16 +221,13 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
   }
 
   Widget _buildTabContent() {
-    switch (_tab) {
-      case 1:
-        if (park.facilities.isEmpty) {
-          return const Text('لم تُضف مرافق بعد', style: AppText.caption);
-        }
+    switch (_tabs[_tab]) {
+      case 'المرافق':
         return Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            for (final facility in park.facilities)
+            for (final facility in place.facilities)
               Chip(
                 avatar: const Icon(Icons.check_circle,
                     size: 18, color: AppColors.plantGreen),
@@ -227,15 +238,15 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
               ),
           ],
         );
-      case 2:
+      case 'الموقع':
         return _buildLocationMap();
       default:
-        return Text(park.description, style: AppText.body);
+        return Text(place.description, style: AppText.body);
     }
   }
 
   Widget _buildLocationMap() {
-    final point = LatLng(park.latitude, park.longitude);
+    final point = LatLng(place.latitude!, place.longitude!);
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: SizedBox(
@@ -243,7 +254,7 @@ class _ParkDetailScreenState extends State<ParkDetailScreen> {
         child: FlutterMap(
           options: MapOptions(
             initialCenter: point,
-            initialZoom: 15,
+            initialZoom: place.category == PlaceCategory.nature ? 10 : 15,
             interactionOptions:
                 const InteractionOptions(flags: InteractiveFlag.none),
           ),
@@ -295,7 +306,9 @@ class _Stat extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 11, color: AppColors.textSecondary)),
         ],
       ),
     );

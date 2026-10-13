@@ -7,9 +7,9 @@ import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/features/map/widgets/map_top_overlay.dart';
-import 'package:hail_parks_guide/features/map/widgets/park_quick_info_card.dart';
+import 'package:hail_parks_guide/features/map/widgets/place_quick_info_card.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
-import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
 class MapPage extends StatefulWidget {
@@ -26,22 +26,50 @@ class _MapPageState extends State<MapPage> {
   final MapController _mapController = MapController();
   final Location _location = Location();
 
-  ParkModel? _selectedPark;
+  PlaceCategory? _category;
+  PlaceModel? _selectedPlace;
   LatLng? _userPosition;
 
-  void _selectPark(ParkModel park) {
-    setState(() => _selectedPark = park);
-    _mapController.move(LatLng(park.latitude, park.longitude), 15);
+  /// Places that have coordinates and match the category filter.
+  List<PlaceModel> get _visiblePlaces => HailData.places
+      .where((p) => p.hasLocation && (_category == null || p.category == _category))
+      .toList();
+
+  LatLng _pointOf(PlaceModel place) => LatLng(place.latitude!, place.longitude!);
+
+  void _selectPlace(PlaceModel place) {
+    setState(() => _selectedPlace = place);
+    // Zoom out further for large natural areas.
+    final zoom = place.category == PlaceCategory.nature ? 11.0 : 15.0;
+    _mapController.move(_pointOf(place), zoom);
   }
 
-  /// Focuses a park when another screen asked to "show on map".
+  void _selectCategory(PlaceCategory? category) {
+    setState(() {
+      _category = category;
+      _selectedPlace = null;
+    });
+    final points = _visiblePlaces.map(_pointOf).toList();
+    if (points.length > 1) {
+      _mapController.fitCamera(CameraFit.coordinates(
+        coordinates: points,
+        padding: const EdgeInsets.fromLTRB(48, 200, 48, kNavBarSpace + 40),
+      ));
+    } else if (points.length == 1) {
+      _mapController.move(points.first, 13);
+    }
+  }
+
+  /// Focuses a place when another screen asked to "show on map".
   void _handleFocusRequest(NavigationProvider nav) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final id = nav.takeParkToShowOnMap();
+      final id = nav.takePlaceToShowOnMap();
       if (id == null) return;
-      final park = HailData.parks.where((p) => p.id == id).firstOrNull;
-      if (park != null) _selectPark(park);
+      final place = HailData.places.where((p) => p.id == id).firstOrNull;
+      if (place == null || !place.hasLocation) return;
+      setState(() => _category = null);
+      _selectPlace(place);
     });
   }
 
@@ -87,8 +115,8 @@ class _MapPageState extends State<MapPage> {
           mapController: _mapController,
           options: MapOptions(
             initialCenter: _hailCenter,
-            initialZoom: 13,
-            onTap: (_, __) => setState(() => _selectedPark = null),
+            initialZoom: 12,
+            onTap: (_, __) => setState(() => _selectedPlace = null),
           ),
           children: [
             TileLayer(
@@ -97,7 +125,7 @@ class _MapPageState extends State<MapPage> {
             ),
             MarkerLayer(
               markers: [
-                for (final park in HailData.parks) _buildParkMarker(park),
+                for (final place in _visiblePlaces) _buildMarker(place),
                 if (_userPosition != null)
                   Marker(
                     point: _userPosition!,
@@ -126,14 +154,13 @@ class _MapPageState extends State<MapPage> {
           left: 0,
           right: 0,
           child: MapTopOverlay(
-            parks: HailData.parks,
-            selectedParkId: _selectedPark?.id,
-            onParkSelected: _selectPark,
+            category: _category,
+            onCategoryChanged: _selectCategory,
           ),
         ),
         PositionedDirectional(
           end: 16,
-          bottom: _selectedPark == null ? kNavBarSpace : kNavBarSpace + 180,
+          bottom: _selectedPlace == null ? kNavBarSpace : kNavBarSpace + 130,
           child: CircleIconButton(
             icon: Icons.my_location,
             size: 52,
@@ -141,34 +168,41 @@ class _MapPageState extends State<MapPage> {
             onPressed: _goToMyLocation,
           ),
         ),
-        if (_selectedPark != null)
+        if (_selectedPlace != null)
           Positioned(
             left: 0,
             right: 0,
             bottom: kNavBarSpace - 16,
-            child: ParkQuickInfoCard(
-              park: _selectedPark!,
-              onClose: () => setState(() => _selectedPark = null),
+            child: PlaceQuickInfoCard(
+              place: _selectedPlace!,
+              onClose: () => setState(() => _selectedPlace = null),
             ),
           ),
       ],
     );
   }
 
-  Marker _buildParkMarker(ParkModel park) {
-    final selected = park.id == _selectedPark?.id;
+  /// Round pin with the category icon; the selected place is larger.
+  Marker _buildMarker(PlaceModel place) {
+    final selected = place.id == _selectedPlace?.id;
+    final size = selected ? 52.0 : 42.0;
     return Marker(
-      point: LatLng(park.latitude, park.longitude),
-      width: 52,
-      height: 52,
-      alignment: Alignment.topCenter,
+      point: _pointOf(place),
+      width: size,
+      height: size,
       child: GestureDetector(
-        onTap: () => _selectPark(park),
-        child: Icon(
-          Icons.location_on,
-          size: selected ? 52 : 44,
-          color: selected ? AppColors.accent : AppColors.brown,
-          shadows: const [Shadow(color: Colors.black26, blurRadius: 6)],
+        onTap: () => _selectPlace(place),
+        child: Container(
+          decoration: BoxDecoration(
+            color: selected ? AppColors.accent : AppColors.brown,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.cream, width: 3),
+            boxShadow: const [
+              BoxShadow(color: Colors.black26, blurRadius: 6),
+            ],
+          ),
+          child: Icon(place.category.icon,
+              size: size * 0.5, color: AppColors.white),
         ),
       ),
     );

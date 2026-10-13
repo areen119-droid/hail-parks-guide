@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
-import 'package:hail_parks_guide/models/park_model.dart';
+import 'package:hail_parks_guide/models/place_model.dart';
 
-/// Title and a scrollable row of park chips over the map.
+/// Title and category filter chips over the map.
 class MapTopOverlay extends StatelessWidget {
-  final List<ParkModel> parks;
-  final String? selectedParkId;
-  final ValueChanged<ParkModel> onParkSelected;
+  /// Selected category, or null for all places.
+  final PlaceCategory? category;
+  final ValueChanged<PlaceCategory?> onCategoryChanged;
 
   const MapTopOverlay({
     super.key,
-    required this.parks,
-    required this.selectedParkId,
-    required this.onParkSelected,
+    required this.category,
+    required this.onCategoryChanged,
   });
 
   @override
@@ -46,7 +45,7 @@ class MapTopOverlay extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'خريطة الحدائق',
+                'خريطة حائل',
                 style: TextStyle(
                   fontFamily: AppText.headingFont,
                   fontSize: 26,
@@ -57,18 +56,23 @@ class MapTopOverlay extends StatelessWidget {
               const SizedBox(height: 10),
               SizedBox(
                 height: 42,
-                child: ListView.separated(
+                child: ListView(
                   scrollDirection: Axis.horizontal,
-                  itemCount: parks.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final park = parks[index];
-                    return PillChip(
-                      label: park.name,
-                      selected: park.id == selectedParkId,
-                      onTap: () => onParkSelected(park),
-                    );
-                  },
+                  children: [
+                    PillChip(
+                      label: 'الكل',
+                      selected: category == null,
+                      onTap: () => onCategoryChanged(null),
+                    ),
+                    for (final c in PlaceCategory.values) ...[
+                      const SizedBox(width: 8),
+                      PillChip(
+                        label: c.label,
+                        selected: category == c,
+                        onTap: () => onCategoryChanged(c),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
