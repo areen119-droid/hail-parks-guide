@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toList();
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppColors.background),
+      decoration: AppDecorations.screenBackground,
       child: SafeArea(
         bottom: false,
         child: CustomScrollView(

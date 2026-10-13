@@ -43,6 +43,19 @@ class AppText {
   );
 }
 
+class AppDecorations {
+  /// Hail landscape photo behind every screen, tinted with sand so text
+  /// stays readable.
+  static const BoxDecoration screenBackground = BoxDecoration(
+    color: AppColors.sandLight,
+    image: DecorationImage(
+      image: AssetImage('assets/images/hail_landscape.jpg'),
+      fit: BoxFit.cover,
+      colorFilter: ColorFilter.mode(Color(0xC2F0E2D2), BlendMode.srcOver),
+    ),
+  );
+}
+
 ThemeData buildAppTheme() {
   return ThemeData(
     fontFamily: AppText.bodyFont,

@@ -19,7 +19,7 @@ class PlantDetailScreen extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.background),
+        decoration: AppDecorations.screenBackground,
         child: SafeArea(
           child: ListView(
             padding: const EdgeInsets.only(bottom: 32),
