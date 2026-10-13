@@ -5,6 +5,7 @@ import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/splashScreen/splash_screen.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
+import 'package:hail_parks_guide/providers/guide_provider.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
 void main() {
@@ -13,6 +14,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        ChangeNotifierProvider(create: (_) => GuideProvider()),
       ],
       child: const MyApp(),
     ),

@@ -59,3 +59,6 @@ lib/firebase_options.dart
 
 # Android build output
 android/build/
+
+# Claude API key (never commit)
+api_keys.json

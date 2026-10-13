@@ -32,6 +32,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         if (place.hasLocation) 'الموقع',
       ];
 
+  void _askGuide() {
+    context.read<NavigationProvider>().openGuide(
+        question: 'أخبرني عن ${place.name}: ما الذي يميزه، وما أفضل وقت لزيارته، وبماذا تنصحني؟');
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
   void _showOnMap() {
     context.read<NavigationProvider>().showPlaceOnMap(place.id);
     Navigator.popUntil(context, (route) => route.isFirst);
@@ -152,6 +158,18 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             const SizedBox(height: 14),
           ],
           _buildTabContent(),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            onPressed: _askGuide,
+            icon: const Icon(Icons.auto_awesome, size: 18),
+            label: const Text('اسأل المرشد عن هذا المكان'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.brown,
+              side: const BorderSide(color: AppColors.chip),
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            ),
+          ),
           if (place.gallery.isNotEmpty) ...[
             const SizedBox(height: 20),
             const SectionHeader(title: 'الصور'),

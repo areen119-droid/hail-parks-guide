@@ -127,6 +127,49 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildPlannerBanner(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.read<NavigationProvider>().openGuide(planner: true),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+        decoration: BoxDecoration(
+          color: AppColors.brown,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: const Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: AppColors.accent,
+              child: Icon(Icons.auto_awesome, color: AppColors.white),
+            ),
+            SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'خطط رحلتك إلى حائل',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.white,
+                    ),
+                  ),
+                  Text(
+                    'دع المرشد الذكي يقترح لك خطة تناسبك',
+                    style: TextStyle(fontSize: 13, color: AppColors.sandLight),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward, color: AppColors.white),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPanel(BuildContext context, List<PlaceModel> places) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, kNavBarSpace),
@@ -148,6 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          _buildPlannerBanner(context),
+          const SizedBox(height: 20),
           SectionHeader(
             title: _category?.label ?? 'أماكن حائل',
             actionLabel: 'عرض على الخريطة',

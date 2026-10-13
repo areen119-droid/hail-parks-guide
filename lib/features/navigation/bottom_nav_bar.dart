@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/features/guide/screens/guide_screen.dart';
 import 'package:hail_parks_guide/features/home/screens/home_screen.dart';
 import 'package:hail_parks_guide/features/map/screens/map_page.dart';
 import 'package:hail_parks_guide/features/plants/plants_screen.dart';
@@ -16,6 +17,7 @@ class MainNavigation extends StatelessWidget {
   static const _items = [
     _NavItem(Icons.home_outlined, Icons.home_rounded, 'الرئيسية'),
     _NavItem(Icons.map_outlined, Icons.map_rounded, 'الخريطة'),
+    _NavItem(Icons.auto_awesome_outlined, Icons.auto_awesome, 'المرشد'),
     _NavItem(Icons.local_florist_outlined, Icons.local_florist, 'النباتات'),
     _NavItem(Icons.person_outline, Icons.person_rounded, 'ملفي'),
   ];
@@ -32,6 +34,7 @@ class MainNavigation extends StatelessWidget {
         children: const [
           HomeScreen(),
           MapPage(),
+          GuideScreen(),
           PlantsScreen(),
           ProfileScreen(),
         ],
