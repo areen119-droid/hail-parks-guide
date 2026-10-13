@@ -298,14 +298,15 @@ class HailData {
     ),
 
     // Restaurants
-    // TODO: add each restaurant's location (Google Maps link).
     PlaceModel(
       id: 'loft',
-      name: 'Loft',
+      name: 'لوفت LOFT',
       category: PlaceCategory.restaurant,
       description:
           'مطعم متنوع المطابخ يقدم البرجر والباستا والبيتزا والسلطات وأطباقًا سعودية مثل الأرز، وفيه ركن للقهوة. من أفضل المطاعم في حائل.',
       location: 'مدينة حائل',
+      latitude: 27.4815287,
+      longitude: 41.6724078,
       facilities: [
         'برجر',
         'باستا وبيتزا',
@@ -317,28 +318,44 @@ class HailData {
     ),
     PlaceModel(
       id: 'me_gusta',
-      name: 'Me Gusta',
+      name: 'ME GUSTA',
       category: PlaceCategory.restaurant,
       description:
           'مطعم إيطالي بقائمة متنوعة قريبة من قائمة Loft، تشمل الباستا والبيتزا والبرجر والسلطات.',
       location: 'مدينة حائل',
+      latitude: 27.5419145,
+      longitude: 41.6625983,
       facilities: ['مطبخ إيطالي', 'باستا وبيتزا', 'برجر', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'rogaruka',
-      name: 'RogaRuka',
+      name: 'روقا روكو',
       category: PlaceCategory.restaurant,
       description: 'مطعم إيطالي في مدينة حائل.',
       location: 'مدينة حائل',
+      latitude: 27.4861316,
+      longitude: 41.6666366,
       facilities: ['مطبخ إيطالي', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'opalo',
-      name: 'Opalo',
+      name: 'أوبالو بيتزاريا OPALO',
       category: PlaceCategory.restaurant,
-      description: 'مطعم إيطالي في مدينة حائل.',
+      description: 'مطعم بيتزا إيطالي في مدينة حائل.',
       location: 'مدينة حائل',
+      latitude: 27.4642278,
+      longitude: 41.6457958,
       facilities: ['مطبخ إيطالي', 'مناسب للعائلات'],
+    ),
+    PlaceModel(
+      id: 'uzbek_rice',
+      name: 'أوزبك للرز البخاري',
+      category: PlaceCategory.restaurant,
+      description: 'مطعم مشهور في حائل متخصص في الرز البخاري.',
+      location: 'مدينة حائل',
+      latitude: 27.5235395,
+      longitude: 41.655508,
+      facilities: ['رز بخاري'],
     ),
 
     // Cafes
@@ -349,6 +366,8 @@ class HailData {
       description:
           'فرع حائل من محمصة القهوة المختصة السعودية المعروفة، ولها فروع في الرياض ومدن أخرى. المقهى في مبنى قديم أعيد تجديده بحجر الجرانيت المحلي من حائل. ليس مخصصًا للعائلات.',
       location: 'حي البحيرة، حائل',
+      latitude: 27.4972666,
+      longitude: 41.6988502,
       facilities: ['قهوة مختصة', 'علامة سعودية'],
     ),
     PlaceModel(
@@ -358,15 +377,19 @@ class HailData {
       description:
           'من أشهر مقاهي حائل، يتميز بموقعه الرائع وجلساته الخارجية المفتوحة المطلة على الجبال.',
       location: 'مدينة حائل',
+      latitude: 27.5147188,
+      longitude: 41.6327169,
       facilities: ['جلسات خارجية', 'إطلالة على الجبال', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'osol',
-      name: 'أصول Osol',
+      name: 'أوسول OSOL',
       category: PlaceCategory.cafe,
       description:
           'مقهى في مدينة حائل يقدم حلويات مميزة ولذيذة. ليس مخصصًا للعائلات.',
       location: 'مدينة حائل',
+      latitude: 27.5219544,
+      longitude: 41.6443182,
       facilities: ['حلويات مميزة'],
     ),
     PlaceModel(
@@ -375,14 +398,18 @@ class HailData {
       category: PlaceCategory.cafe,
       description: 'مقهى سعودي معروف وواسع الشهرة، له فروع في الرياض وحائل.',
       location: 'مدينة حائل',
+      latitude: 27.4724606,
+      longitude: 41.6522045,
       facilities: ['علامة سعودية', 'مناسب للعائلات'],
     ),
     PlaceModel(
       id: 'blunt',
-      name: 'Blunt',
+      name: 'بلنت Blunt',
       category: PlaceCategory.cafe,
       description: 'من أعلى المقاهي تقييمًا في حائل. ليس مخصصًا للعائلات.',
       location: 'مدينة حائل',
+      latitude: 27.4972259,
+      longitude: 41.6990635,
       facilities: ['الأعلى تقييمًا'],
     ),
   ];
