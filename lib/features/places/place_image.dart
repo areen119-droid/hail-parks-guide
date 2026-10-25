@@ -34,7 +34,7 @@ class PlaceImage extends StatelessWidget {
       height: height,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.brownMedium, AppColors.accent],
+          colors: [AppColors.primary, AppColors.primaryLight],
           begin: AlignmentDirectional.topStart,
           end: AlignmentDirectional.bottomEnd,
         ),

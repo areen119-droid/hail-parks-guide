@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Text('اكتشف', style: AppText.display),
           const Text(
             'أجمل الحدائق والمتنزهات في حائل',
-            style: TextStyle(fontSize: 14, color: AppColors.brownMedium),
+            style: TextStyle(fontSize: 14, color: AppColors.primaryMedium),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -140,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
         decoration: BoxDecoration(
-          color: AppColors.brown,
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(24),
         ),
         child: const Row(

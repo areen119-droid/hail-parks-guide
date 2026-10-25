@@ -44,11 +44,11 @@ class MainNavigation extends StatelessWidget {
         child: Container(
           height: 72,
           decoration: BoxDecoration(
-            color: AppColors.brown,
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: AppColors.brown.withValues(alpha: 0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),

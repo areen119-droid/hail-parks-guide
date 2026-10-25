@@ -52,7 +52,7 @@ class _PlantsScreenState extends State<PlantsScreen> {
                     const Text(
                       'تعرّف على النباتات في حدائق ومتنزهات المنطقة',
                       style: TextStyle(
-                          fontSize: 14, color: AppColors.brownMedium),
+                          fontSize: 14, color: AppColors.primaryMedium),
                     ),
                     const SizedBox(height: 16),
                     SearchPill(
@@ -145,7 +145,7 @@ class _PlantCard extends StatelessWidget {
               end: 8,
               child: CircleIconButton(
                 icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                iconColor: isFavorite ? AppColors.error : AppColors.brown,
+                iconColor: isFavorite ? AppColors.error : AppColors.primary,
                 size: 36,
                 tooltip: 'المفضلة',
                 onPressed: () => favorites.togglePlant(plant.id),

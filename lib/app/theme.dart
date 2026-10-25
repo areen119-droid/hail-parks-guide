@@ -51,7 +51,7 @@ class AppDecorations {
     image: DecorationImage(
       image: AssetImage('assets/images/hail_landscape.jpg'),
       fit: BoxFit.cover,
-      colorFilter: ColorFilter.mode(Color(0xC2F0E2D2), BlendMode.srcOver),
+      colorFilter: ColorFilter.mode(Color(0xC4F2ECDF), BlendMode.srcOver),
     ),
   );
 }
@@ -61,8 +61,8 @@ ThemeData buildAppTheme() {
     fontFamily: AppText.bodyFont,
     scaffoldBackgroundColor: AppColors.sandLight,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.brown,
-      primary: AppColors.brown,
+      seedColor: AppColors.primary,
+      primary: AppColors.primary,
       surface: AppColors.cream,
     ),
     appBarTheme: const AppBarTheme(
@@ -80,7 +80,7 @@ ThemeData buildAppTheme() {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.brown,
+        backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         elevation: 0,
         minimumSize: const Size.fromHeight(56),
@@ -93,7 +93,7 @@ ThemeData buildAppTheme() {
       ),
     ),
     snackBarTheme: const SnackBarThemeData(
-      backgroundColor: AppColors.brown,
+      backgroundColor: AppColors.primary,
       behavior: SnackBarBehavior.floating,
     ),
   );

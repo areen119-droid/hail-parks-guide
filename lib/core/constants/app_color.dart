@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 
-/// Warm desert palette (sand, cream and dark brown).
+/// Desert-oasis palette: sand and cream backgrounds with deep green.
 class AppColors {
   // Backgrounds
-  static const Color sand = Color(0xFFE8D6C3);
-  static const Color sandLight = Color(0xFFF3E8DC);
-  static const Color cream = Color(0xFFFAF5EF);
-  static const Color chip = Color(0xFFE2D0BD);
+  static const Color sand = Color(0xFFE8DCC8);
+  static const Color sandLight = Color(0xFFF4EDE1);
+  static const Color cream = Color(0xFFFAF7F0);
+  static const Color chip = Color(0xFFDCE6D3); // pale green
   static const Color white = Color(0xFFFFFFFF);
 
   // Brand
-  static const Color brown = Color(0xFF3B2A1F);
-  static const Color brownMedium = Color(0xFF6B4E3A);
-  static const Color accent = Color(0xFFC9773A);
-  static const Color star = Color(0xFFF0A93B);
-  static const Color plantGreen = Color(0xFF5E7A4A);
+  static const Color primary = Color(0xFF2F5A3C); // deep green
+  static const Color primaryMedium = Color(0xFF4F7D58);
+  static const Color primaryLight = Color(0xFF8DB38A);
+  static const Color accent = Color(0xFFC98A3A); // warm amber highlights
+  static const Color star = Color(0xFFF0B53B);
+  static const Color plantGreen = Color(0xFF5E8A4E);
 
   // Text
-  static const Color textPrimary = Color(0xFF2E1F16);
-  static const Color textSecondary = Color(0xFF8C7462);
-  static const Color divider = Color(0xFFE6D8CA);
+  static const Color textPrimary = Color(0xFF1F2E24);
+  static const Color textSecondary = Color(0xFF6E7D70);
+  static const Color divider = Color(0xFFDDE3D5);
 
   // Status
   static const Color error = Color(0xFFC0392B);

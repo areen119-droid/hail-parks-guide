@@ -31,7 +31,7 @@ class MapTopOverlay extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brown.withValues(alpha: 0.12),
+            color: AppColors.primary.withValues(alpha: 0.12),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),

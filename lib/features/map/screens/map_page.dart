@@ -194,7 +194,7 @@ class _MapPageState extends State<MapPage> {
         onTap: () => _selectPlace(place),
         child: Container(
           decoration: BoxDecoration(
-            color: selected ? AppColors.accent : AppColors.brown,
+            color: selected ? AppColors.accent : AppColors.primary,
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.cream, width: 3),
             boxShadow: const [

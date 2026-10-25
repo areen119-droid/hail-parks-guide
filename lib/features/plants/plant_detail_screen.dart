@@ -36,7 +36,7 @@ class PlantDetailScreen extends StatelessWidget {
                     const Spacer(),
                     CircleIconButton(
                       icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                      iconColor: isFavorite ? AppColors.error : AppColors.brown,
+                      iconColor: isFavorite ? AppColors.error : AppColors.primary,
                       tooltip: 'المفضلة',
                       onPressed: () => favorites.togglePlant(plant.id),
                     ),

@@ -31,7 +31,7 @@ class CircleIconButton extends StatelessWidget {
           child: SizedBox(
             width: size,
             height: size,
-            child: Icon(icon, size: 22, color: iconColor ?? AppColors.brown),
+            child: Icon(icon, size: 22, color: iconColor ?? AppColors.primary),
           ),
         ),
       ),
@@ -84,7 +84,7 @@ class PillChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? AppColors.brown : AppColors.chip,
+      color: selected ? AppColors.primary : AppColors.chip,
       shape: const StadiumBorder(),
       child: InkWell(
         customBorder: const StadiumBorder(),

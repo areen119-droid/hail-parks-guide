@@ -34,7 +34,7 @@ class PlaceQuickInfoCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(26),
           boxShadow: [
             BoxShadow(
-              color: AppColors.brown.withValues(alpha: 0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
               blurRadius: 18,
               offset: const Offset(0, 6),
             ),

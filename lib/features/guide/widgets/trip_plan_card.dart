@@ -181,7 +181,7 @@ class _StopTile extends StatelessWidget {
                       IconButton(
                         tooltip: 'عرض على الخريطة',
                         icon: const Icon(Icons.map_outlined,
-                            color: AppColors.brown),
+                            color: AppColors.primary),
                         onPressed: () => context
                             .read<NavigationProvider>()
                             .showPlaceOnMap(place.id),

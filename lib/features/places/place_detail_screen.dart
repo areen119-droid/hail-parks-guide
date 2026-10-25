@@ -69,7 +69,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     const Spacer(),
                     CircleIconButton(
                       icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                      iconColor: isFavorite ? AppColors.error : AppColors.brown,
+                      iconColor: isFavorite ? AppColors.error : AppColors.primary,
                       tooltip: 'المفضلة',
                       onPressed: () => favorites.togglePlace(place.id),
                     ),
@@ -166,7 +166,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             icon: const Icon(Icons.auto_awesome, size: 18),
             label: const Text('اسأل المرشد عن هذا المكان'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.brown,
+              foregroundColor: AppColors.primary,
               side: const BorderSide(color: AppColors.chip),
               shape: const StadiumBorder(),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
@@ -233,7 +233,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: _tab == i ? AppColors.brown : Colors.transparent,
+                        color: _tab == i ? AppColors.primary : Colors.transparent,
                         width: 2,
                       ),
                     ),
@@ -308,7 +308,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   height: 44,
                   alignment: Alignment.topCenter,
                   child: const Icon(Icons.location_on,
-                      size: 44, color: AppColors.brown),
+                      size: 44, color: AppColors.primary),
                 ),
               ],
             ),

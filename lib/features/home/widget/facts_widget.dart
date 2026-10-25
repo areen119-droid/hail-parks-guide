@@ -24,7 +24,7 @@ class _FactsWidgetState extends State<FactsWidget> {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
       decoration: BoxDecoration(
-        color: AppColors.brown,
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(

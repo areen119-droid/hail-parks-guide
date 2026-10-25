@@ -84,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: const CircleAvatar(
                   radius: 46,
                   backgroundColor: AppColors.chip,
-                  child: Icon(Icons.person, size: 52, color: AppColors.brownMedium),
+                  child: Icon(Icons.person, size: 52, color: AppColors.primaryMedium),
                 ),
               ),
             ),
@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Text(
                 user.bio,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: AppColors.brownMedium),
+                style: const TextStyle(fontSize: 14, color: AppColors.primaryMedium),
               ),
             ),
             const SizedBox(height: 20),
@@ -181,7 +181,7 @@ class _Stat extends StatelessWidget {
               fontFamily: AppText.headingFont,
               fontSize: 26,
               fontWeight: FontWeight.w700,
-              color: AppColors.brown,
+              color: AppColors.primary,
             ),
           ),
           Text(label, style: AppText.caption),

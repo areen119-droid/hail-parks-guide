@@ -48,7 +48,7 @@ class PlaceCard extends StatelessWidget {
                 end: 12,
                 child: CircleIconButton(
                   icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                  iconColor: isFavorite ? AppColors.error : AppColors.brown,
+                  iconColor: isFavorite ? AppColors.error : AppColors.primary,
                   size: 40,
                   tooltip: 'المفضلة',
                   onPressed: () => favorites.togglePlace(place.id),

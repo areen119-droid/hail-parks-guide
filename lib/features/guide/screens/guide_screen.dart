@@ -172,7 +172,7 @@ class _GuideScreenState extends State<GuideScreen> {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.brown,
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(28),
             ),
             child: const Row(
@@ -266,7 +266,7 @@ class _GuideScreenState extends State<GuideScreen> {
               Text(
                 '--dart-define-from-file=api_keys.json',
                 textDirection: TextDirection.ltr,
-                style: TextStyle(fontSize: 12, color: AppColors.brown),
+                style: TextStyle(fontSize: 12, color: AppColors.primary),
               ),
             ],
           ),
@@ -304,7 +304,7 @@ class _GuideScreenState extends State<GuideScreen> {
           ),
           const SizedBox(width: 8),
           Material(
-            color: loading ? AppColors.chip : AppColors.brown,
+            color: loading ? AppColors.chip : AppColors.primary,
             shape: const CircleBorder(),
             child: InkWell(
               customBorder: const CircleBorder(),
@@ -339,7 +339,7 @@ class _MessageBubble extends StatelessWidget {
 
     final fromUser = message.fromUser;
     final background = fromUser
-        ? AppColors.brown
+        ? AppColors.primary
         : message.isError
             ? AppColors.error.withValues(alpha: 0.1)
             : AppColors.cream;
