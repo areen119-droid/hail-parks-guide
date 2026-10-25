@@ -8,6 +8,7 @@ import 'package:hail_parks_guide/features/home/widget/facts_widget.dart';
 import 'package:hail_parks_guide/features/home/widget/place_card.dart';
 import 'package:hail_parks_guide/features/home/widget/plants_widget.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
+import 'package:hail_parks_guide/features/places/food_card.dart';
 import 'package:hail_parks_guide/features/settings/screens/settings_screen.dart';
 import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
@@ -21,11 +22,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _query = '';
-  PlaceCategory? _category; // null shows all categories
+  // Parks are the app's focus, so they're selected first. null shows all
+  // main categories; restaurants and cafes have their own section below.
+  PlaceCategory? _category = PlaceCategory.park;
+
+  static final _foodPlaces =
+      HailData.places.where((p) => p.category.isFood).toList();
 
   @override
   Widget build(BuildContext context) {
     final places = HailData.places.where((place) {
+      if (place.category.isFood) return false;
       final matchesCategory = _category == null || place.category == _category;
       final matchesQuery = place.name.contains(_query.trim());
       return matchesCategory && matchesQuery;
@@ -91,13 +98,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 18),
           SearchPill(
-            hint: 'ابحث عن مكان...',
+            hint: 'ابحث عن حديقة أو مكان...',
             onChanged: (value) => setState(() => _query = value),
           ),
           const SizedBox(height: 22),
           const Text('اكتشف', style: AppText.display),
           const Text(
-            'أجمل الأماكن والمعالم في منطقة حائل',
+            'أجمل الحدائق والمتنزهات في حائل',
             style: TextStyle(fontSize: 14, color: AppColors.brownMedium),
           ),
           const SizedBox(height: 16),
@@ -106,19 +113,19 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                PillChip(
-                  label: 'الكل',
-                  selected: _category == null,
-                  onTap: () => setState(() => _category = null),
-                ),
-                for (final c in PlaceCategory.values) ...[
-                  const SizedBox(width: 8),
+                for (final c in PlaceCategory.main) ...[
                   PillChip(
                     label: c.label,
                     selected: _category == c,
                     onTap: () => setState(() => _category = c),
                   ),
+                  const SizedBox(width: 8),
                 ],
+                PillChip(
+                  label: 'الكل',
+                  selected: _category == null,
+                  onTap: () => setState(() => _category = null),
+                ),
               ],
             ),
           ),
@@ -215,6 +222,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: PlaceCard(place: place),
               ),
           const SizedBox(height: 10),
+          const SectionHeader(title: 'أين تأكل؟'),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 140,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _foodPlaces.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (context, index) =>
+                  FoodCard(place: _foodPlaces[index]),
+            ),
+          ),
+          const SizedBox(height: 24),
           const SectionHeader(title: 'نبتة اليوم'),
           const SizedBox(height: 12),
           const PlantsWidget(),

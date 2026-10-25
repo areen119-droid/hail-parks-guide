@@ -10,6 +10,12 @@ enum PlaceCategory {
   final String label;
   final IconData icon;
   const PlaceCategory(this.label, this.icon);
+
+  /// Restaurants and cafes are shown on the side, not in the main lists.
+  bool get isFood => this == restaurant || this == cafe;
+
+  /// Categories shown in the main places list, parks first.
+  static const List<PlaceCategory> main = [park, nature, heritage];
 }
 
 class PlaceModel {

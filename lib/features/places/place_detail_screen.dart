@@ -6,6 +6,7 @@ import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/utils/helpers.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
+import 'package:hail_parks_guide/features/places/food_card.dart';
 import 'package:hail_parks_guide/features/places/place_image.dart';
 import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
@@ -123,6 +124,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   Widget _buildPanel() {
     final distance = distanceFromHailLabel(place);
+    final nearby = nearbyFood(place);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12),
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
@@ -170,6 +172,23 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
             ),
           ),
+          if (!place.category.isFood && nearby.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            const SectionHeader(title: 'مطاعم ومقاهي قريبة'),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 140,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: nearby.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) => FoodCard(
+                  place: nearby[index].$1,
+                  caption: 'على بعد ${formatKm(nearby[index].$2)}',
+                ),
+              ),
+            ),
+          ],
           if (place.gallery.isNotEmpty) ...[
             const SizedBox(height: 20),
             const SectionHeader(title: 'الصور'),
