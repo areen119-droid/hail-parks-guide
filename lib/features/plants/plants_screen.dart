@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hail_parks_guide/core/widgets/favorite_feedback.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
@@ -125,7 +126,7 @@ class _PlantCard extends StatelessWidget {
         MaterialPageRoute(builder: (_) => PlantDetailScreen(plant: plant)),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(20),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -148,7 +149,7 @@ class _PlantCard extends StatelessWidget {
                 iconColor: isFavorite ? AppColors.error : AppColors.primary,
                 size: 36,
                 tooltip: 'المفضلة',
-                onPressed: () => favorites.togglePlant(plant.id),
+                onPressed: () => toggleFavoritePlant(context, plant),
               ),
             ),
             PositionedDirectional(

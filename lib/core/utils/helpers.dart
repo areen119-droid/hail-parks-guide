@@ -33,6 +33,6 @@ String? distanceFromHailLabel(PlaceModel place) {
   if (!place.hasLocation) return null;
   final km = distanceKm(HailData.hailLatitude, HailData.hailLongitude,
       place.latitude!, place.longitude!);
-  if (km < 10) return 'داخل المدينة';
+  if (km < 5) return 'داخل المدينة';
   return '≈ ${km.round()} كم';
 }

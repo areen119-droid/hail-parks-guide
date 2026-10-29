@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hail_parks_guide/core/widgets/favorite_feedback.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
@@ -38,7 +39,7 @@ class PlantDetailScreen extends StatelessWidget {
                       icon: isFavorite ? Icons.favorite : Icons.favorite_border,
                       iconColor: isFavorite ? AppColors.error : AppColors.primary,
                       tooltip: 'المفضلة',
-                      onPressed: () => favorites.togglePlant(plant.id),
+                      onPressed: () => toggleFavoritePlant(context, plant),
                     ),
                   ],
                 ),

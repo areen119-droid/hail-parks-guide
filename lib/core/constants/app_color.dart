@@ -19,17 +19,11 @@ class AppColors {
 
   // Text
   static const Color textPrimary = Color(0xFF1F2E24);
-  static const Color textSecondary = Color(0xFF6E7D70);
+  static const Color textSecondary = Color(0xFF55645A);
   static const Color divider = Color(0xFFDDE3D5);
 
   // Status
   static const Color error = Color(0xFFC0392B);
   static const Color location = Color(0xFF2F80ED);
 
-  /// Background gradient used behind most screens.
-  static const LinearGradient background = LinearGradient(
-    colors: [sand, sandLight],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
 }

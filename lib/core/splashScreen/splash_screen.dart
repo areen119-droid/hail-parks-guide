@@ -37,33 +37,25 @@ class SplashScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
               child: Column(
                 children: [
+                  const SizedBox(height: 24),
                   const Text(
-                    'هيا نستكشف حائل',
-                    style: TextStyle(
-                      fontFamily: AppText.headingFont,
-                      fontSize: 22,
-                      color: AppColors.primaryMedium,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'اكتشف أجمل\nحدائق حائل',
+                    'دليل حدائق حائل',
                     textAlign: TextAlign.center,
-                    style: AppText.display,
+                    style: AppText.brand,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   const Text(
-                    'حدائق ومتنزهات حائل وأجمل معالمها\nفي دليل واحد',
+                    'حدائق المدينة وجبالها ومعالمها على خريطة واحدة،\nومرشد يساعدك في تخطيط زيارتك.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,
-                      color: AppColors.primaryMedium,
-                      height: 1.5,
+                      color: AppColors.textPrimary,
+                      height: 1.6,
                     ),
                   ),
                   const Spacer(),
                   PrimaryButton(
-                    label: 'ابدأ الاستكشاف',
+                    label: 'ابدأ',
                     onPressed: () => Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (_) => const MainNavigation()),

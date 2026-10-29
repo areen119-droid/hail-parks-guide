@@ -23,48 +23,30 @@ class _FactsWidgetState extends State<FactsWidget> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+      // Light card so the planner banner stays the one dark block on Home.
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.chip,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.lightbulb_outline, color: AppColors.star, size: 20),
-              SizedBox(width: 6),
-              Text(
-                'هل تعلم؟',
-                style: TextStyle(
-                  fontFamily: AppText.headingFont,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.white,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: Text(
-              HailData.facts[_index],
-              key: ValueKey(_index),
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.sandLight,
-                height: 1.7,
-              ),
+          const Text('هل تعلم؟', style: AppText.section),
+          const SizedBox(height: 6),
+          Text(
+            HailData.facts[_index],
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColors.textPrimary,
+              height: 1.7,
             ),
           ),
           Align(
             alignment: AlignmentDirectional.centerEnd,
-            child: TextButton.icon(
+            child: TextButton(
               onPressed: _nextFact,
-              icon: const Icon(Icons.arrow_forward, size: 16),
-              label: const Text('معلومة أخرى'),
-              style: TextButton.styleFrom(foregroundColor: AppColors.star),
+              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+              child: const Text('معلومة أخرى'),
             ),
           ),
         ],

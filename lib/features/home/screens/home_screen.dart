@@ -31,12 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final places = HailData.places.where((place) {
+    final matches = HailData.places.where((place) {
       if (place.category.isFood) return false;
       final matchesCategory = _category == null || place.category == _category;
       final matchesQuery = place.name.contains(_query.trim());
       return matchesCategory && matchesQuery;
-    }).toList();
+    });
+    // Places with photos first; they get the large cards.
+    final places = [
+      ...matches.where((p) => p.image.isNotEmpty),
+      ...matches.where((p) => p.image.isEmpty),
+    ];
 
     return Container(
       decoration: AppDecorations.screenBackground,
@@ -141,16 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
         decoration: BoxDecoration(
           color: AppColors.primary,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: const Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: AppColors.accent,
-              child: Icon(Icons.auto_awesome, color: AppColors.white),
-            ),
-            SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,9 +162,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: AppColors.white,
                     ),
                   ),
+                  SizedBox(height: 2),
                   Text(
-                    'دع المرشد الذكي يقترح لك خطة تناسبك',
-                    style: TextStyle(fontSize: 13, color: AppColors.sandLight),
+                    'أجب عن ٤ أسئلة وتحصل على جدول زيارة جاهز',
+                    style: TextStyle(fontSize: 13, color: AppColors.chip),
                   ),
                 ],
               ),
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, kNavBarSpace),
       decoration: const BoxDecoration(
         color: AppColors.cream,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

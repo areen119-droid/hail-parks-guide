@@ -23,7 +23,7 @@ class CircleIconButton extends StatelessWidget {
     return Tooltip(
       message: tooltip ?? '',
       child: Material(
-        color: AppColors.cream.withValues(alpha: 0.85),
+        color: AppColors.cream,
         shape: const CircleBorder(),
         child: InkWell(
           customBorder: const CircleBorder(),
@@ -164,10 +164,10 @@ class SearchPill extends StatelessWidget {
         hintStyle: const TextStyle(color: AppColors.textSecondary),
         prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
         filled: true,
-        fillColor: AppColors.cream.withValues(alpha: 0.9),
+        fillColor: AppColors.cream,
         contentPadding: const EdgeInsets.symmetric(vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(28),
           borderSide: BorderSide.none,
         ),
       ),

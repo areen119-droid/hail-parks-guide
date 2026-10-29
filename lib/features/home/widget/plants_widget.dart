@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/smart_image.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
@@ -23,12 +24,12 @@ class PlantsWidget extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(14),
               child: SmartImage(imageData: plant.image, width: 96, height: 96),
             ),
             const SizedBox(width: 14),
@@ -37,15 +38,6 @@ class PlantsWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    plant.type,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.plantGreen,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
                     plant.name,
                     style: const TextStyle(
                       fontSize: 18,
@@ -53,6 +45,7 @@ class PlantsWidget extends StatelessWidget {
                       color: AppColors.textPrimary,
                     ),
                   ),
+                  Text(plant.type, style: AppText.caption),
                   const SizedBox(height: 4),
                   Text(
                     plant.description,

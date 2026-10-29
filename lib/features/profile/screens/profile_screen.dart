@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hail_parks_guide/core/widgets/favorite_feedback.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
@@ -37,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 image: place.image,
                 icon: place.category.icon,
                 open: () => PlaceDetailScreen(place: place),
-                remove: () => favorites.togglePlace(place.id),
+                remove: () => toggleFavoritePlace(context, place),
               ),
           ]
         : [
@@ -48,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 image: plant.image,
                 icon: Icons.local_florist,
                 open: () => PlantDetailScreen(plant: plant),
-                remove: () => favorites.togglePlant(plant.id),
+                remove: () => toggleFavoritePlant(context, plant),
               ),
           ];
 
@@ -106,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: AppColors.cream,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 children: [
@@ -138,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: AppColors.cream,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
                   children: [
@@ -147,8 +148,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 8),
                     Text(
                       _showPlaces
-                          ? 'اضغط ♡ على أي مكان لإضافته هنا'
-                          : 'اضغط ♡ على أي نبتة لإضافتها هنا',
+                          ? 'اضغط زر القلب في صفحة أي مكان لإضافته هنا'
+                          : 'اضغط زر القلب في صفحة أي نبتة لإضافتها هنا',
                       textAlign: TextAlign.center,
                       style: AppText.caption,
                     ),
@@ -178,7 +179,7 @@ class _Stat extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontFamily: AppText.headingFont,
+              fontFamily: AppText.bodyFont,
               fontSize: 26,
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
@@ -226,12 +227,12 @@ class _FavoriteTile extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.cream,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(14),
               child: SmartImage(
                 imageData: item.image,
                 width: 64,

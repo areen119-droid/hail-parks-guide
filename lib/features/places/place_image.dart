@@ -32,13 +32,7 @@ class PlaceImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryLight],
-          begin: AlignmentDirectional.topStart,
-          end: AlignmentDirectional.bottomEnd,
-        ),
-      ),
+      color: AppColors.primaryMedium,
       child: LayoutBuilder(
         builder: (context, constraints) => Icon(
           place.category.icon,

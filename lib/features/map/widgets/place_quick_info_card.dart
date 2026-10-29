@@ -31,7 +31,7 @@ class PlaceQuickInfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.cream,
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: AppColors.primary.withValues(alpha: 0.2),
@@ -43,7 +43,7 @@ class PlaceQuickInfoCard extends StatelessWidget {
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(14),
               child: PlaceImage(place: place, width: 96, height: 96),
             ),
             const SizedBox(width: 14),

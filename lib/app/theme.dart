@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 
-/// Fonts: Amiri (serif) for headings, Tajawal for everything else.
+/// Fonts: Tajawal everywhere; Amiri only for the app's name.
 class AppText {
-  static const String headingFont = 'Amiri';
+  static const String brandFont = 'Amiri';
   static const String bodyFont = 'Tajawal';
 
+  /// The app name on the welcome and about screens.
+  static const TextStyle brand = TextStyle(
+    fontFamily: brandFont,
+    fontSize: 36,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+    height: 1.3,
+  );
+
   static const TextStyle display = TextStyle(
-    fontFamily: headingFont,
-    fontSize: 34,
+    fontFamily: bodyFont,
+    fontSize: 30,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
     height: 1.3,
   );
 
   static const TextStyle title = TextStyle(
-    fontFamily: headingFont,
-    fontSize: 26,
+    fontFamily: bodyFont,
+    fontSize: 24,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
     height: 1.3,
@@ -72,7 +81,7 @@ ThemeData buildAppTheme() {
       foregroundColor: AppColors.textPrimary,
       centerTitle: true,
       titleTextStyle: TextStyle(
-        fontFamily: AppText.headingFont,
+        fontFamily: AppText.bodyFont,
         fontSize: 22,
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,

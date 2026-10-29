@@ -20,14 +20,7 @@ class MapTopOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColors.sand,
-            AppColors.sandLight.withValues(alpha: 0.9),
-          ],
-        ),
+        color: AppColors.sandLight,
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
@@ -47,7 +40,7 @@ class MapTopOverlay extends StatelessWidget {
               const Text(
                 'خريطة حائل',
                 style: TextStyle(
-                  fontFamily: AppText.headingFont,
+                  fontFamily: AppText.bodyFont,
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,

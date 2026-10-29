@@ -12,13 +12,23 @@ class SettingsScreen extends StatelessWidget {
 
   Future<void> _clearFavorites(BuildContext context) async {
     final favorites = context.read<FavoritesProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final count =
+        favorites.favoritePlaces.length + favorites.favoritePlants.length;
+    if (count == 0) {
+      messenger.showSnackBar(
+          const SnackBar(content: Text('مفضلتك فارغة، لا يوجد ما يُمسح')));
+      return;
+    }
     final confirmed = await showConfirmationDialog(
       context,
       title: 'مسح المفضلة',
-      message: 'هل تريد إزالة جميع الأماكن والنباتات من المفضلة؟',
-      confirmLabel: 'مسح',
+      message: 'ستُزال $count عناصر من مفضلتك. لا يمكن التراجع عن ذلك.',
+      confirmLabel: 'مسح الكل',
     );
-    if (confirmed) await favorites.clearAll();
+    if (!confirmed) return;
+    await favorites.clearAll();
+    messenger.showSnackBar(const SnackBar(content: Text('مُسحت المفضلة')));
   }
 
   @override

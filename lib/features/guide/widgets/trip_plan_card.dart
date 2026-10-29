@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
+import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/features/places/place_detail_screen.dart';
 import 'package:hail_parks_guide/features/places/place_image.dart';
@@ -9,11 +10,27 @@ import 'package:hail_parks_guide/models/chat_message.dart';
 import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
-/// Shows an AI trip plan as days of place cards.
+/// Shows an AI trip plan as days of place cards, followed by what the
+/// visitor can do next with it.
 class TripPlanCard extends StatelessWidget {
   final TripPlan plan;
+  final VoidCallback onSaveAll;
+  final VoidCallback onEditAnswers;
+  final ValueChanged<String> onFollowUp;
 
-  const TripPlanCard({super.key, required this.plan});
+  const TripPlanCard({
+    super.key,
+    required this.plan,
+    required this.onSaveAll,
+    required this.onEditAnswers,
+    required this.onFollowUp,
+  });
+
+  static const _followUps = [
+    'أضف مكانًا للغداء',
+    'اجعلها أقصر',
+    'أماكن أنسب للأطفال',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -21,26 +38,11 @@ class TripPlanCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.cream,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.auto_awesome, size: 18, color: AppColors.accent),
-              SizedBox(width: 6),
-              Text(
-                'خطة رحلتك',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.accent,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
           Text(plan.title, style: AppText.title.copyWith(fontSize: 22)),
           const SizedBox(height: 4),
           Text(plan.summary, style: AppText.body.copyWith(fontSize: 14)),
@@ -61,7 +63,7 @@ class TripPlanCard extends StatelessWidget {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: AppColors.sandLight,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,6 +83,35 @@ class TripPlanCard extends StatelessWidget {
               ),
             ),
           ],
+          const SizedBox(height: 18),
+          // What to do next: one main action, one secondary, quick tweaks.
+          ElevatedButton(
+            onPressed: onSaveAll,
+            child: const Text('احفظ أماكن الخطة في مفضلتي'),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: TextButton(
+              onPressed: onEditAnswers,
+              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+              child: const Text('عدّل إجاباتي وأعد التخطيط'),
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text('أو اطلب تعديلًا:', style: AppText.caption),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final followUp in _followUps)
+                PillChip(
+                  label: followUp,
+                  selected: false,
+                  onTap: () => onFollowUp(followUp),
+                ),
+            ],
+          ),
         ],
       ),
     );

@@ -55,7 +55,7 @@ class AboutUsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('دليل حدائق حائل', style: AppText.display),
+                      Text('دليل حدائق حائل', style: AppText.brand),
                       Text(
                         'Hail Parks Guide · الإصدار 1.0.0',
                         style: AppText.caption,
@@ -141,7 +141,7 @@ class _Card extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.cream,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

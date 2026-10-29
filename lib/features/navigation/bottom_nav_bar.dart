@@ -17,7 +17,7 @@ class MainNavigation extends StatelessWidget {
   static const _items = [
     _NavItem(Icons.home_outlined, Icons.home_rounded, 'الرئيسية'),
     _NavItem(Icons.map_outlined, Icons.map_rounded, 'الخريطة'),
-    _NavItem(Icons.auto_awesome_outlined, Icons.auto_awesome, 'المرشد'),
+    _NavItem(Icons.explore_outlined, Icons.explore, 'المرشد'),
     _NavItem(Icons.local_florist_outlined, Icons.local_florist, 'النباتات'),
     _NavItem(Icons.person_outline, Icons.person_rounded, 'ملفي'),
   ];
@@ -92,7 +92,7 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.white : AppColors.chip.withValues(alpha: 0.6);
+    final color = selected ? AppColors.white : AppColors.primaryLight;
     return InkWell(
       borderRadius: BorderRadius.circular(28),
       onTap: onTap,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:hail_parks_guide/core/widgets/favorite_feedback.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/utils/helpers.dart';
@@ -71,7 +72,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       icon: isFavorite ? Icons.favorite : Icons.favorite_border,
                       iconColor: isFavorite ? AppColors.error : AppColors.primary,
                       tooltip: 'المفضلة',
-                      onPressed: () => favorites.togglePlace(place.id),
+                      onPressed: () => toggleFavoritePlace(context, place),
                     ),
                   ],
                 ),
@@ -82,14 +83,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(place.name, style: AppText.title),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on,
-                            size: 16, color: AppColors.accent),
-                        const SizedBox(width: 4),
-                        Text(place.location, style: AppText.caption),
-                      ],
-                    ),
+                    const SizedBox(height: 4),
+                    Text(_summaryLine, style: AppText.caption),
+                    if (place.openingHours.isNotEmpty)
+                      Text('ساعات العمل: ${place.openingHours}',
+                          style: AppText.caption),
                   ],
                 ),
               ),
@@ -122,8 +120,18 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
-  Widget _buildPanel() {
+  /// e.g. "حدائق ومتنزهات · مدينة حائل · ≈ 12 كم من وسط حائل"
+  String get _summaryLine {
     final distance = distanceFromHailLabel(place);
+    return [
+      place.category.label,
+      place.location,
+      if (distance != null)
+        distance == 'داخل المدينة' ? distance : '$distance من وسط حائل',
+    ].join(' · ');
+  }
+
+  Widget _buildPanel() {
     final nearby = nearbyFood(place);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12),
@@ -135,36 +143,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              _Stat(
-                icon: place.category.icon,
-                value: place.category.label,
-                label: 'التصنيف',
-              ),
-              _Stat(
-                icon: Icons.near_me_outlined,
-                value: distance ?? '—',
-                label: 'المسافة من حائل',
-              ),
-              _Stat(
-                icon: Icons.access_time,
-                value: place.openingHours.isEmpty ? '—' : place.openingHours,
-                label: 'ساعات العمل',
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
           if (_tabs.length > 1) ...[
             _buildTabs(),
             const SizedBox(height: 14),
           ],
           _buildTabContent(),
           const SizedBox(height: 14),
-          OutlinedButton.icon(
+          OutlinedButton(
             onPressed: _askGuide,
-            icon: const Icon(Icons.auto_awesome, size: 18),
-            label: const Text('اسأل المرشد عن هذا المكان'),
+            child: const Text('اسأل المرشد عن هذا المكان'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.primary,
               side: const BorderSide(color: AppColors.chip),
@@ -200,7 +187,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 itemCount: place.gallery.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 10),
                 itemBuilder: (context, index) => ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                   child: PlaceImage(
                     place: place,
                     image: place.gallery[index],
@@ -314,39 +301,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-
-  const _Stat({required this.icon, required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: AppColors.accent, size: 22),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 11, color: AppColors.textSecondary)),
-        ],
       ),
     );
   }

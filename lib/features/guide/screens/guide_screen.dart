@@ -8,6 +8,7 @@ import 'package:hail_parks_guide/features/guide/widgets/planner_sheet.dart';
 import 'package:hail_parks_guide/features/guide/widgets/trip_plan_card.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
 import 'package:hail_parks_guide/models/chat_message.dart';
+import 'package:hail_parks_guide/providers/favorites_provider.dart';
 import 'package:hail_parks_guide/providers/guide_provider.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
@@ -120,7 +121,11 @@ class _GuideScreenState extends State<GuideScreen> {
                           itemCount: messages.length + (guide.loading ? 1 : 0),
                           itemBuilder: (context, index) => index == messages.length
                               ? const _TypingBubble()
-                              : _MessageBubble(message: messages[index]),
+                              : _MessageBubble(
+                                  message: messages[index],
+                                  onEditPlan: _openPlanner,
+                                  onFollowUp: _send,
+                                ),
                         ),
             ),
             if (guide.hasApiKey)
@@ -184,26 +189,21 @@ class _GuideScreenState extends State<GuideScreen> {
                       Text(
                         'خطط رحلتي',
                         style: TextStyle(
-                          fontFamily: AppText.headingFont,
-                          fontSize: 26,
+                          fontSize: 24,
                           fontWeight: FontWeight.w700,
                           color: AppColors.white,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'أخبر المرشد بمدة رحلتك واهتماماتك، وسيقترح لك خطة من أجمل أماكن حائل',
-                        style: TextStyle(color: AppColors.sandLight, height: 1.5),
+                        '٤ أسئلة عن مدة رحلتك ومن معك واهتماماتك، ثم جدول زيارة بالأماكن والأوقات.',
+                        style: TextStyle(color: AppColors.chip, height: 1.5),
                       ),
                     ],
                   ),
                 ),
                 SizedBox(width: 12),
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: AppColors.accent,
-                  child: Icon(Icons.route, color: AppColors.white),
-                ),
+                Icon(Icons.arrow_forward, color: AppColors.white),
               ],
             ),
           ),
@@ -223,14 +223,7 @@ class _GuideScreenState extends State<GuideScreen> {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.chat_bubble_outline,
-                          size: 18, color: AppColors.accent),
-                      const SizedBox(width: 10),
-                      Expanded(child: Text(suggestion)),
-                    ],
-                  ),
+                  child: Text(suggestion, style: const TextStyle(fontSize: 15)),
                 ),
               ),
             ),
@@ -325,15 +318,51 @@ class _GuideScreenState extends State<GuideScreen> {
 
 class _MessageBubble extends StatelessWidget {
   final ChatMessage message;
+  final VoidCallback onEditPlan;
+  final ValueChanged<String> onFollowUp;
 
-  const _MessageBubble({required this.message});
+  const _MessageBubble({
+    required this.message,
+    required this.onEditPlan,
+    required this.onFollowUp,
+  });
+
+  /// Adds every place in the plan to favorites and says how many were new.
+  void _savePlan(BuildContext context, TripPlan plan) {
+    final favorites = context.read<FavoritesProvider>();
+    final nav = context.read<NavigationProvider>();
+    final ids = {
+      for (final day in plan.days)
+        for (final stop in day.stops) stop.placeId,
+    };
+    final newIds = ids.where((id) => !favorites.isFavoritePlace(id)).toList();
+    for (final id in newIds) {
+      favorites.togglePlace(id);
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(newIds.isEmpty
+            ? 'كل أماكن الخطة موجودة في مفضلتك'
+            : 'حُفظت ${newIds.length} أماكن في مفضلتك'),
+        action: SnackBarAction(
+          label: 'عرض المفضلة',
+          onPressed: () => nav.selectTab(NavigationProvider.profileTab),
+        ),
+      ));
+  }
 
   @override
   Widget build(BuildContext context) {
     if (message.plan != null) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
-        child: TripPlanCard(plan: message.plan!),
+        child: TripPlanCard(
+          plan: message.plan!,
+          onSaveAll: () => _savePlan(context, message.plan!),
+          onEditAnswers: onEditPlan,
+          onFollowUp: onFollowUp,
+        ),
       );
     }
 
@@ -361,8 +390,8 @@ class _MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadiusDirectional.only(
-            topStart: const Radius.circular(22),
-            topEnd: const Radius.circular(22),
+            topStart: const Radius.circular(20),
+            topEnd: const Radius.circular(20),
             bottomStart: Radius.circular(fromUser ? 22 : 6),
             bottomEnd: Radius.circular(fromUser ? 6 : 22),
           ),
@@ -388,7 +417,7 @@ class _TypingBubble extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.cream,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: const Row(
           mainAxisSize: MainAxisSize.min,

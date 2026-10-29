@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 
-/// Asks the user to confirm an action. Returns true if they confirmed.
+/// Asks the user to confirm a destructive action. Returns true if they
+/// confirmed. The confirm button is filled red; cancel stays a quiet text button.
 Future<bool> showConfirmationDialog(
   BuildContext context, {
   required String title,
@@ -12,20 +13,24 @@ Future<bool> showConfirmationDialog(
     context: context,
     builder: (ctx) => AlertDialog(
       backgroundColor: AppColors.cream,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-      content: Text(message),
+      content: Text(message, style: const TextStyle(height: 1.6)),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('إلغاء',
-              style: TextStyle(color: AppColors.textSecondary)),
+          style: TextButton.styleFrom(foregroundColor: AppColors.textSecondary),
+          child: const Text('إلغاء'),
         ),
-        TextButton(
+        FilledButton(
           onPressed: () => Navigator.pop(ctx, true),
-          child: Text(confirmLabel,
-              style: const TextStyle(
-                  color: AppColors.error, fontWeight: FontWeight.w700)),
+          style: FilledButton.styleFrom(
+            backgroundColor: AppColors.error,
+            foregroundColor: AppColors.white,
+            shape: const StadiumBorder(),
+          ),
+          child: Text(confirmLabel),
         ),
       ],
     ),
