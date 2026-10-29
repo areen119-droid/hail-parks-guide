@@ -62,3 +62,6 @@ android/build/
 
 # Claude API key (never commit)
 api_keys.json
+
+# Python cache
+__pycache__/
