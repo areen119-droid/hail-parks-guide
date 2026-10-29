@@ -1,0 +1,27 @@
+[
+  {
+    "question": "وين اروح مع عيالي",
+    "label": "family_kids",
+    "confidence": 0.9999970197677612
+  },
+  {
+    "question": "ابي اكل بيتزا",
+    "label": "restaurants",
+    "confidence": 0.9999897480010986
+  },
+  {
+    "question": "وين اشوف الغروب",
+    "label": "sunset_views",
+    "confidence": 0.9999970197677612
+  },
+  {
+    "question": "شكرا",
+    "label": "thanks",
+    "confidence": 0.9999555349349976
+  },
+  {
+    "question": "جبة",
+    "label": "rock_art_unesco",
+    "confidence": 0.9995275735855103
+  }
+]

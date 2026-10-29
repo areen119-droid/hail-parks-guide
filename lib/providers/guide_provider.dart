@@ -1,48 +1,49 @@
 import 'package:flutter/foundation.dart';
 import 'package:hail_parks_guide/models/chat_message.dart';
-import 'package:hail_parks_guide/services/claude_service.dart';
+import 'package:hail_parks_guide/services/guide_bot.dart';
+import 'package:hail_parks_guide/services/trip_planner.dart';
 
-/// Chat state for the AI guide tab.
+/// Chat state for the guide tab. Answers come from the trained model that
+/// runs on the device, so the guide works offline.
 class GuideProvider extends ChangeNotifier {
-  final ClaudeService _service = ClaudeService();
   final List<ChatMessage> _messages = [];
-  bool _loading = false;
+  Future<GuideBot>? _bot;
 
   List<ChatMessage> get messages => List.unmodifiable(_messages);
-  bool get loading => _loading;
-  bool get hasApiKey => ClaudeService.hasApiKey;
 
-  Future<void> ask(String question) =>
-      _run(question, () async => ChatMessage(fromUser: false, text: await _service.ask(question)));
+  /// Answers [question] and returns what the screen should do next.
+  Future<GuideAction> ask(String question) async {
+    final text = question.trim();
+    if (text.isEmpty) return GuideAction.none;
+    _messages.add(ChatMessage(fromUser: true, text: text));
+    notifyListeners();
 
-  /// [request] is the full planner request; [shownText] is what the chat shows.
-  Future<void> planTrip(String request, {required String shownText}) => _run(
-        shownText,
-        () async => ChatMessage(fromUser: false, plan: await _service.planTrip(request)),
-      );
+    try {
+      final reply = (await (_bot ??= GuideBot.load())).reply(text);
+      _messages.add(reply.message);
+      notifyListeners();
+      return reply.action;
+    } catch (e) {
+      debugPrint('Guide error: $e');
+      _bot = null; // try loading the model again next time
+      _messages.add(const ChatMessage(
+          fromUser: false, text: 'حدث خطأ في المرشد، حاول مرة أخرى', isError: true));
+      notifyListeners();
+      return GuideAction.none;
+    }
+  }
 
-  void clear() {
-    _messages.clear();
-    _service.reset();
+  /// Builds a trip plan from the planner answers; [shownText] is what the
+  /// chat shows as the visitor's message.
+  void planTrip(TripAnswers answers, {required String shownText}) {
+    _messages
+      ..add(ChatMessage(fromUser: true, text: shownText))
+      ..add(ChatMessage(fromUser: false, plan: TripPlanner.plan(answers)));
     notifyListeners();
   }
 
-  Future<void> _run(String shownText, Future<ChatMessage> Function() call) async {
-    if (_loading || shownText.trim().isEmpty) return;
-    _messages.add(ChatMessage(fromUser: true, text: shownText.trim()));
-    _loading = true;
+  void clear() {
+    _messages.clear();
     notifyListeners();
-    try {
-      _messages.add(await call());
-    } on GuideException catch (e) {
-      _messages.add(ChatMessage(fromUser: false, text: e.message, isError: true));
-    } catch (e) {
-      debugPrint('Guide error: $e');
-      _messages.add(const ChatMessage(
-          fromUser: false, text: 'حدث خطأ غير متوقع، حاول مرة أخرى', isError: true));
-    } finally {
-      _loading = false;
-      notifyListeners();
-    }
   }
 }

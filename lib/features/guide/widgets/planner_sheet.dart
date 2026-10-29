@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
+import 'package:hail_parks_guide/services/trip_planner.dart';
 
-/// What the planner form produces: the full request for the AI, and a short
-/// version to show in the chat.
+/// What the planner form produces: the answers, and a short summary of
+/// them to show in the chat.
 class PlannerRequest {
-  final String prompt;
+  final TripAnswers answers;
   final String shownText;
-  const PlannerRequest(this.prompt, this.shownText);
+  const PlannerRequest(this.answers, this.shownText);
 }
 
 /// Opens the trip planner; returns null if the user closes it.
@@ -73,20 +74,17 @@ class _PlannerSheetState extends State<_PlannerSheet> {
         _selectedInterests.isEmpty ? 'كل شيء' : _selectedInterests.join('، ');
     final notes = _notes.text.trim();
 
-    final prompt = '''
-خطط لي رحلة في منطقة حائل باستخدام الأماكن الموجودة في التطبيق فقط.
-- مدة الرحلة: $_duration
-- الرفقة: $_companion
-- الاهتمامات: $interests
-- الوقت المفضل: $_time
-${notes.isEmpty ? '' : '- ملاحظات: $notes'}
-
-رتّب المحطات بترتيب منطقي حسب القرب الجغرافي، واجعل عدد المحطات واقعيًا للمدة مع مراعاة المسافات بين الأماكن. أضف استراحة غداء أو قهوة من المطاعم والمقاهي في القائمة عندما يناسب ذلك الرحلة. سمِّ كل يوم مثل "اليوم الأول"، واكتب وقتًا تقريبيًا لكل محطة مثل "٩:٠٠ صباحًا"، ونبذة قصيرة لماذا تناسب هذه المحطة الزائر. اكتب كل النصوص بالعربية.''';
-
+    final answers = TripAnswers(
+      duration: _duration,
+      companion: _companion,
+      interests: {..._selectedInterests},
+      time: _time,
+      notes: notes,
+    );
     final shownText =
         'خطط لي رحلة: $_duration، $_companion، $interests${notes.isEmpty ? '' : '، $notes'}';
 
-    Navigator.pop(context, PlannerRequest(prompt, shownText));
+    Navigator.pop(context, PlannerRequest(answers, shownText));
   }
 
   @override

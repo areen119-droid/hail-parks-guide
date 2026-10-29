@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
-import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/features/places/place_detail_screen.dart';
 import 'package:hail_parks_guide/features/places/place_image.dart';
@@ -16,21 +15,14 @@ class TripPlanCard extends StatelessWidget {
   final TripPlan plan;
   final VoidCallback onSaveAll;
   final VoidCallback onEditAnswers;
-  final ValueChanged<String> onFollowUp;
 
   const TripPlanCard({
     super.key,
     required this.plan,
     required this.onSaveAll,
     required this.onEditAnswers,
-    required this.onFollowUp,
   });
 
-  static const _followUps = [
-    'أضف مكانًا للغداء',
-    'اجعلها أقصر',
-    'أماكن أنسب للأطفال',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +76,7 @@ class TripPlanCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 18),
-          // What to do next: one main action, one secondary, quick tweaks.
+          // What to do next: one main action and one secondary.
           ElevatedButton(
             onPressed: onSaveAll,
             child: const Text('احفظ أماكن الخطة في مفضلتي'),
@@ -96,21 +88,6 @@ class TripPlanCard extends StatelessWidget {
               style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               child: const Text('عدّل إجاباتي وأعد التخطيط'),
             ),
-          ),
-          const SizedBox(height: 6),
-          const Text('أو اطلب تعديلًا:', style: AppText.caption),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final followUp in _followUps)
-                PillChip(
-                  label: followUp,
-                  selected: false,
-                  onTap: () => onFollowUp(followUp),
-                ),
-            ],
           ),
         ],
       ),

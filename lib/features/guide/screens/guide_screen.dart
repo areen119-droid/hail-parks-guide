@@ -4,15 +4,20 @@ import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/confirmation_dialog.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
+import 'package:hail_parks_guide/core/widgets/smart_image.dart';
+import 'package:hail_parks_guide/data/hail_data.dart';
 import 'package:hail_parks_guide/features/guide/widgets/planner_sheet.dart';
 import 'package:hail_parks_guide/features/guide/widgets/trip_plan_card.dart';
 import 'package:hail_parks_guide/features/navigation/bottom_nav_bar.dart';
+import 'package:hail_parks_guide/features/places/food_card.dart';
+import 'package:hail_parks_guide/features/plants/plant_detail_screen.dart';
 import 'package:hail_parks_guide/models/chat_message.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 import 'package:hail_parks_guide/providers/guide_provider.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
-/// AI guide: chat about Hail's places and plan trips.
+/// The guide: a chatbot trained on Hail questions (runs on the device),
+/// plus the trip planner.
 class GuideScreen extends StatefulWidget {
   const GuideScreen({super.key});
 
@@ -22,10 +27,10 @@ class GuideScreen extends StatefulWidget {
 
 class _GuideScreenState extends State<GuideScreen> {
   static const _suggestions = [
-    'ما أفضل مكان للعائلات مع الأطفال؟',
-    'أين أشاهد غروب الشمس في حائل؟',
-    'ما المواقع المسجلة في اليونسكو؟',
-    'ما النباتات التي قد أراها في الجبال؟',
+    'وين أروح مع عيالي؟',
+    'وين أشوف الغروب؟',
+    'أبي مطعم حلو',
+    'وش مواقع اليونسكو في حائل؟',
   ];
 
   final _input = TextEditingController();
@@ -39,20 +44,29 @@ class _GuideScreenState extends State<GuideScreen> {
     super.dispose();
   }
 
-  void _send([String? text]) {
+  Future<void> _send([String? text]) async {
     final question = (text ?? _input.text).trim();
     if (question.isEmpty) return;
     _input.clear();
     FocusScope.of(context).unfocus();
-    context.read<GuideProvider>().ask(question);
+    final nav = context.read<NavigationProvider>();
+    final action = await context.read<GuideProvider>().ask(question);
+    if (!mounted) return;
+    switch (action) {
+      case GuideAction.openPlanner:
+        _openPlanner();
+      case GuideAction.openMap:
+        nav.selectTab(NavigationProvider.mapTab);
+      case GuideAction.none:
+        break;
+    }
   }
 
   Future<void> _openPlanner() async {
     final guide = context.read<GuideProvider>();
-    if (!guide.hasApiKey) return; // the screen already explains how to enable it
     final request = await showPlannerSheet(context);
     if (request != null) {
-      guide.planTrip(request.prompt, shownText: request.shownText);
+      guide.planTrip(request.answers, shownText: request.shownText);
     }
   }
 
@@ -95,9 +109,8 @@ class _GuideScreenState extends State<GuideScreen> {
   @override
   Widget build(BuildContext context) {
     _handlePendingRequests(context.watch<NavigationProvider>());
-    final guide = context.watch<GuideProvider>();
-    final messages = guide.messages;
-    _scrollToBottomIfNew(messages.length + (guide.loading ? 1 : 0));
+    final messages = context.watch<GuideProvider>().messages;
+    _scrollToBottomIfNew(messages.length);
 
     // The nav bar is hidden behind the keyboard, so only leave room for it
     // when the keyboard is closed.
@@ -111,25 +124,20 @@ class _GuideScreenState extends State<GuideScreen> {
           children: [
             _buildHeader(messages.isNotEmpty),
             Expanded(
-              child: !guide.hasApiKey
-                  ? _buildMissingKey()
-                  : messages.isEmpty
-                      ? _buildWelcome()
-                      : ListView.builder(
-                          controller: _scroll,
-                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                          itemCount: messages.length + (guide.loading ? 1 : 0),
-                          itemBuilder: (context, index) => index == messages.length
-                              ? const _TypingBubble()
-                              : _MessageBubble(
-                                  message: messages[index],
-                                  onEditPlan: _openPlanner,
-                                  onFollowUp: _send,
-                                ),
-                        ),
+              child: messages.isEmpty
+                  ? _buildWelcome()
+                  : ListView.builder(
+                      controller: _scroll,
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) => _MessageBubble(
+                        message: messages[index],
+                        onEditPlan: _openPlanner,
+                        onSuggestion: _send,
+                      ),
+                    ),
             ),
-            if (guide.hasApiKey)
-              _buildInputBar(guide.loading, keyboardOpen ? 8 : kNavBarSpace - 8),
+            _buildInputBar(keyboardOpen ? 8 : kNavBarSpace - 8),
           ],
         ),
       ),
@@ -232,43 +240,7 @@ class _GuideScreenState extends State<GuideScreen> {
     );
   }
 
-  Widget _buildMissingKey() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppColors.cream,
-            borderRadius: BorderRadius.circular(28),
-          ),
-          child: const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.key_off_outlined, size: 44, color: AppColors.accent),
-              SizedBox(height: 12),
-              Text('المرشد غير مفعّل', style: AppText.section),
-              SizedBox(height: 8),
-              Text(
-                'لتفعيل المرشد، ضع مفتاح Claude API في ملف api_keys.json '
-                'وشغّل التطبيق مع:',
-                textAlign: TextAlign.center,
-                style: AppText.caption,
-              ),
-              SizedBox(height: 6),
-              Text(
-                '--dart-define-from-file=api_keys.json',
-                textDirection: TextDirection.ltr,
-                style: TextStyle(fontSize: 12, color: AppColors.primary),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputBar(bool loading, double bottomPadding) {
+  Widget _buildInputBar(double bottomPadding) {
     return Padding(
       padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPadding),
       child: Row(
@@ -276,7 +248,6 @@ class _GuideScreenState extends State<GuideScreen> {
           Expanded(
             child: TextField(
               controller: _input,
-              enabled: !loading,
               minLines: 1,
               maxLines: 4,
               textInputAction: TextInputAction.send,
@@ -297,11 +268,11 @@ class _GuideScreenState extends State<GuideScreen> {
           ),
           const SizedBox(width: 8),
           Material(
-            color: loading ? AppColors.chip : AppColors.primary,
+            color: AppColors.primary,
             shape: const CircleBorder(),
             child: InkWell(
               customBorder: const CircleBorder(),
-              onTap: loading ? null : _send,
+              onTap: _send,
               child: const SizedBox(
                 width: 52,
                 height: 52,
@@ -319,12 +290,12 @@ class _GuideScreenState extends State<GuideScreen> {
 class _MessageBubble extends StatelessWidget {
   final ChatMessage message;
   final VoidCallback onEditPlan;
-  final ValueChanged<String> onFollowUp;
+  final ValueChanged<String> onSuggestion;
 
   const _MessageBubble({
     required this.message,
     required this.onEditPlan,
-    required this.onFollowUp,
+    required this.onSuggestion,
   });
 
   /// Adds every place in the plan to favorites and says how many were new.
@@ -361,76 +332,109 @@ class _MessageBubble extends StatelessWidget {
           plan: message.plan!,
           onSaveAll: () => _savePlan(context, message.plan!),
           onEditAnswers: onEditPlan,
-          onFollowUp: onFollowUp,
         ),
       );
     }
 
     final fromUser = message.fromUser;
-    final background = fromUser
-        ? AppColors.primary
-        : message.isError
-            ? AppColors.error.withValues(alpha: 0.1)
-            : AppColors.cream;
-    final textColor = fromUser
-        ? AppColors.white
-        : message.isError
-            ? AppColors.error
-            : AppColors.textPrimary;
+    final places = [
+      for (final id in message.placeIds)
+        ...HailData.places.where((p) => p.id == id),
+    ];
 
-    return Align(
-      // The guide's replies start on the reading side; the user's on the other.
-      alignment:
-          fromUser ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
-      child: Container(
-        constraints: BoxConstraints(
-            maxWidth: MediaQuery.sizeOf(context).width * 0.8),
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadiusDirectional.only(
-            topStart: const Radius.circular(20),
-            topEnd: const Radius.circular(20),
-            bottomStart: Radius.circular(fromUser ? 22 : 6),
-            bottomEnd: Radius.circular(fromUser ? 6 : 22),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          // The guide's replies start on the reading side; the user's on the other.
+          alignment: fromUser
+              ? AlignmentDirectional.centerEnd
+              : AlignmentDirectional.centerStart,
+          child: Container(
+            constraints:
+                BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.8),
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: fromUser
+                  ? AppColors.primary
+                  : message.isError
+                      ? AppColors.error.withValues(alpha: 0.1)
+                      : AppColors.cream,
+              borderRadius: BorderRadiusDirectional.only(
+                topStart: const Radius.circular(20),
+                topEnd: const Radius.circular(20),
+                bottomStart: Radius.circular(fromUser ? 20 : 6),
+                bottomEnd: Radius.circular(fromUser ? 6 : 20),
+              ),
+            ),
+            child: SelectableText(
+              message.text,
+              style: TextStyle(
+                color: fromUser
+                    ? AppColors.white
+                    : message.isError
+                        ? AppColors.error
+                        : AppColors.textPrimary,
+                fontSize: 15,
+                height: 1.6,
+              ),
+            ),
           ),
         ),
-        child: SelectableText(
-          message.text,
-          style: TextStyle(color: textColor, fontSize: 15, height: 1.6),
-        ),
-      ),
+        if (places.isNotEmpty)
+          _horizontal(places.length, (i) => FoodCard(place: places[i])),
+        if (message.showPlants)
+          _horizontal(HailData.plants.length, (i) {
+            final plant = HailData.plants[i];
+            return GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => PlantDetailScreen(plant: plant)),
+              ),
+              child: SizedBox(
+                width: 110,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: SmartImage(imageData: plant.image, width: 110, height: 90),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(plant.name,
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ),
+            );
+          }),
+        if (message.suggestions.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final s in message.suggestions)
+                  PillChip(label: s, selected: false, onTap: () => onSuggestion(s)),
+              ],
+            ),
+          ),
+      ],
     );
   }
-}
 
-class _TypingBubble extends StatelessWidget {
-  const _TypingBubble();
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.cream,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                  strokeWidth: 2, color: AppColors.accent),
-            ),
-            SizedBox(width: 10),
-            Text('المرشد يفكر...', style: AppText.caption),
-          ],
+  Widget _horizontal(int count, Widget Function(int) itemBuilder) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: SizedBox(
+        height: 140,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: count,
+          separatorBuilder: (_, __) => const SizedBox(width: 10),
+          itemBuilder: (_, i) => itemBuilder(i),
         ),
       ),
     );

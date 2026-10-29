@@ -1,16 +1,10 @@
-/// One stop in an AI trip plan.
+/// One stop in a trip plan.
 class TripStop {
   final String placeId;
   final String time;
   final String note;
 
   const TripStop({required this.placeId, required this.time, required this.note});
-
-  factory TripStop.fromJson(Map<String, dynamic> json) => TripStop(
-        placeId: json['place_id'] as String,
-        time: json['time'] as String,
-        note: json['note'] as String,
-      );
 }
 
 class TripDay {
@@ -18,14 +12,6 @@ class TripDay {
   final List<TripStop> stops;
 
   const TripDay({required this.label, required this.stops});
-
-  factory TripDay.fromJson(Map<String, dynamic> json) => TripDay(
-        label: json['label'] as String,
-        stops: [
-          for (final s in json['stops'] as List)
-            TripStop.fromJson(s as Map<String, dynamic>),
-        ],
-      );
 }
 
 class TripPlan {
@@ -40,29 +26,28 @@ class TripPlan {
     required this.days,
     required this.tips,
   });
-
-  factory TripPlan.fromJson(Map<String, dynamic> json) => TripPlan(
-        title: json['title'] as String,
-        summary: json['summary'] as String,
-        days: [
-          for (final d in json['days'] as List)
-            TripDay.fromJson(d as Map<String, dynamic>),
-        ],
-        tips: [for (final t in json['tips'] as List) t as String],
-      );
 }
+
+/// What the guide asks the screen to do after a reply.
+enum GuideAction { none, openPlanner, openMap }
 
 /// A message shown in the guide chat.
 class ChatMessage {
   final bool fromUser;
   final String text;
-  final TripPlan? plan; // set when the assistant replied with a trip plan
+  final TripPlan? plan; // set when the guide replied with a trip plan
+  final List<String> placeIds; // places shown as cards under the reply
+  final bool showPlants; // show plant cards under the reply
+  final List<String> suggestions; // quick follow-up questions
   final bool isError;
 
   const ChatMessage({
     required this.fromUser,
     this.text = '',
     this.plan,
+    this.placeIds = const [],
+    this.showPlants = false,
+    this.suggestions = const [],
     this.isError = false,
   });
 }
