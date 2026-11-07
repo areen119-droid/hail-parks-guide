@@ -21,8 +21,8 @@ class TripAnswers {
 }
 
 /// Builds a trip plan from the visitor's answers using simple rules on the
-/// app's own data: match interests, respect who's coming, keep far places
-/// for their own day, order stops by distance, add meals, end at sunset spots.
+/// app's own data. Each day has one activity (a different kind of place than
+/// the day before), lunch, coffee and dinner, spread from morning to evening.
 class TripPlanner {
   static const _familyTag = 'مناسب للعائلات';
   static const _farKm = 40.0;
@@ -34,6 +34,10 @@ class TripPlanner {
   static const _kidsSpots = ['samra_park', 'prince_saud_park', 'iqdah', 'al_wurud_park', 'al_salam_park'];
   static const _sunsetSpots = ['hatem_view', 'samra', 'aarif'];
   static const _ruggedSpots = ['jaww', 'hutaymah', 'shuwaymis', 'nafud'];
+  // The best-known places, best first. With one activity a day, these win
+  // over equally matching places that are merely closer.
+  static const _featured = ['samra_park', 'prince_saud_park', 'jubbah', 'aja', 'hatem_view',
+      'qishla', 'iqdah', 'mashar', 'aarif', 'museum', 'samra', 'al_salam_park'];
 
   static TripPlan plan(TripAnswers answers) {
     final days = switch (answers.duration) {
@@ -46,7 +50,6 @@ class TripPlanner {
     final elderly = answers.companion == 'كبار السن';
     final familyFood = withKids || elderly;
     final noCar = RegExp(r'(لا|ما|بدون|مافي|ماعند)\S*\s*\S*\s*سيار').hasMatch(answers.notes);
-    final foodie = answers.interests.contains('المطاعم والمقاهي');
 
     // 1. Score every sightseeing place by how many interests it matches.
     final scores = <PlaceModel, int>{};
@@ -59,36 +62,35 @@ class TripPlanner {
       if (withKids && _kidsSpots.contains(place.id)) score += 2;
       if (score > 0) scores[place] = score;
     }
+    int rank(PlaceModel p) {
+      final i = _featured.indexOf(p.id);
+      return i == -1 ? _featured.length : i;
+    }
     int byScore(PlaceModel a, PlaceModel b) {
       final s = scores[b]!.compareTo(scores[a]!);
-      return s != 0 ? s : _km(a).compareTo(_km(b));
+      if (s != 0) return s;
+      final r = rank(a).compareTo(rank(b));
+      return r != 0 ? r : _km(a).compareTo(_km(b));
     }
 
-    final near = scores.keys.where((p) => _km(p) <= _farKm).toList()..sort(byScore);
-    final far = scores.keys.where((p) => _km(p) > _farKm).toList()..sort(byScore);
+    final ranked = scores.keys.toList()..sort(byScore);
 
-    // 2. Fill each day: far places get their own day after day one.
-    final perDay = halfDay ? 2 : 3;
-    final used = <String>{};
+    // 2. One activity a day. Day one stays near the city, and each day tries
+    // a different kind of place than the day before (not park after park).
+    final foodUses = <String, int>{};
     final planDays = <TripDay>[];
+    PlaceCategory? lastCategory;
     for (var d = 0; d < days; d++) {
-      final picks = <PlaceModel>[];
-      if (d > 0 && far.isNotEmpty) {
-        picks.add(far.removeAt(0));
-      } else {
-        while (picks.length < perDay && near.isNotEmpty) {
-          picks.add(near.removeAt(0));
-        }
-      }
-      if (picks.isEmpty) break;
-      used.addAll(picks.map((p) => p.id));
-
-      final ordered = _orderStops(picks);
-      final stops = _withMeals(ordered, used,
-          familyFood: familyFood, halfDay: halfDay, foodie: foodie);
+      final options = ranked.where((p) => d > 0 || _km(p) <= _farKm).toList();
+      if (options.isEmpty) break;
+      final activity = options.firstWhere((p) => p.category != lastCategory,
+          orElse: () => options.first);
+      ranked.remove(activity);
+      lastCategory = activity.category;
       planDays.add(TripDay(
         label: days == 1 ? 'جدول اليوم' : 'اليوم ${_dayName(d)}',
-        stops: _timed(stops, answers.time, withKids: withKids),
+        stops: _day(activity, answers.time,
+            halfDay: halfDay, familyFood: familyFood, withKids: withKids, foodUses: foodUses),
       ));
     }
 
@@ -123,82 +125,81 @@ class TripPlanner {
     return score;
   }
 
-  /// Nearest-first from the city center, with sunset spots moved to the end.
-  static List<PlaceModel> _orderStops(List<PlaceModel> places) {
-    final remaining = [...places];
-    final ordered = <PlaceModel>[];
-    var lat = HailData.hailLatitude, lon = HailData.hailLongitude;
-    while (remaining.isNotEmpty) {
-      remaining.sort((a, b) => distanceKm(lat, lon, a.latitude!, a.longitude!)
-          .compareTo(distanceKm(lat, lon, b.latitude!, b.longitude!)));
-      final next = remaining.removeAt(0);
-      ordered.add(next);
-      lat = next.latitude!;
-      lon = next.longitude!;
-    }
-    final sunset = ordered.where((p) => _sunsetSpots.contains(p.id)).toList();
-    return [...ordered.where((p) => !_sunsetSpots.contains(p.id)), ...sunset];
+  /// One day around [activity]: lunch, coffee and dinner at set times, with
+  /// enough time at each stop. A half day has the activity, coffee and one meal.
+  static List<TripStop> _day(PlaceModel activity, String time,
+      {required bool halfDay,
+      required bool familyFood,
+      required bool withKids,
+      required Map<String, int> foodUses}) {
+    final today = <String>{};
+    _Stop meal(int minutes, PlaceCategory category, String role) => _Stop(
+        minutes, _pickFood(category, activity, today, familyFood, foodUses), role);
+    final see = _Stop(0, activity, '');
+    final far = _km(activity) > _farKm;
+    final evening = time == 'المساء' || _sunsetSpots.contains(activity.id);
+
+    final stops = halfDay
+        ? (time == 'الصباح'
+            ? [see.at(9 * 60), meal(11 * 60 + 30, PlaceCategory.cafe, 'قهوة'),
+               meal(13 * 60, PlaceCategory.restaurant, 'غداء')]
+            : [see.at(16 * 60 + 30), meal(18 * 60 + 30, PlaceCategory.cafe, 'قهوة'),
+               meal(20 * 60, PlaceCategory.restaurant, 'عشاء')])
+        : far
+            // Far places take most of the day: leave early, eat back in town.
+            ? [see.at(8 * 60 + 30), meal(14 * 60, PlaceCategory.restaurant, 'غداء'),
+               meal(17 * 60, PlaceCategory.cafe, 'قهوة'),
+               meal(20 * 60 + 30, PlaceCategory.restaurant, 'عشاء')]
+            : evening
+                // Activity late in the afternoon, in time for sunset.
+                ? [meal(13 * 60 + 30, PlaceCategory.restaurant, 'غداء'),
+                   meal(15 * 60 + 30, PlaceCategory.cafe, 'قهوة'), see.at(17 * 60),
+                   meal(20 * 60 + 30, PlaceCategory.restaurant, 'عشاء')]
+                : [see.at(time == 'الصباح' ? 9 * 60 : 10 * 60),
+                   meal(13 * 60 + 30, PlaceCategory.restaurant, 'غداء'),
+                   meal(17 * 60, PlaceCategory.cafe, 'قهوة'),
+                   meal(20 * 60 + 30, PlaceCategory.restaurant, 'عشاء')];
+
+    return [
+      for (final stop in stops)
+        if (stop.place != null)
+          TripStop(
+            placeId: stop.place!.id,
+            time: _clock(stop.minutes),
+            note: _note(stop.place!,
+                role: stop.role, withKids: withKids, nearSunset: stop.minutes >= 16 * 60),
+          ),
+    ];
   }
 
-  /// Adds a meal stop (and a coffee stop on full days or for food lovers).
-  static List<PlaceModel> _withMeals(List<PlaceModel> stops, Set<String> used,
-      {required bool familyFood, required bool halfDay, required bool foodie}) {
-    PlaceModel? nearestFood(PlaceCategory category, PlaceModel near) {
-      final options = HailData.places.where((p) =>
-          p.category == category &&
-          p.hasLocation &&
-          !used.contains(p.id) &&
-          (!familyFood || p.facilities.contains(_familyTag)));
-      if (options.isEmpty) return null;
-      return options.reduce((a, b) =>
-          distanceKm(near.latitude!, near.longitude!, a.latitude!, a.longitude!) <=
-                  distanceKm(near.latitude!, near.longitude!, b.latitude!, b.longitude!)
-              ? a
-              : b);
-    }
-
-    final result = [...stops];
-    final mealAfter = halfDay ? result.length : (result.length / 2).ceil();
-    final restaurant = nearestFood(PlaceCategory.restaurant, result[mealAfter - 1]);
-    if (restaurant != null) {
-      result.insert(mealAfter, restaurant);
-      used.add(restaurant.id);
-    }
-    if (!halfDay || foodie) {
-      final cafe = nearestFood(PlaceCategory.cafe, result.last);
-      if (cafe != null) {
-        // Coffee before the sunset stop if there is one, otherwise at the end.
-        final sunsetIndex = result.indexWhere((p) => _sunsetSpots.contains(p.id));
-        result.insert(sunsetIndex == -1 ? result.length : sunsetIndex, cafe);
-        used.add(cafe.id);
-      }
-    }
-    return result;
-  }
-
-  static List<TripStop> _timed(List<PlaceModel> stops, String time,
-      {required bool withKids}) {
-    var minutes = switch (time) {
-      'الصباح' => 8 * 60,
-      'المساء' => 15 * 60,
-      _ => 9 * 60,
-    };
-    final result = <TripStop>[];
-    for (final place in stops) {
-      result.add(TripStop(
-        placeId: place.id,
-        time: _clock(minutes),
-        note: _note(place, withKids: withKids, nearSunset: minutes >= 16 * 60),
-      ));
-      final far = _km(place) > _farKm;
-      minutes += place.category.isFood ? 75 : (far ? 240 : 105);
-    }
-    return result;
+  /// The restaurant or café to use near [near]: one not used yet on the trip
+  /// if possible (repeats only when the list runs out), never twice a day.
+  static PlaceModel? _pickFood(PlaceCategory category, PlaceModel near, Set<String> today,
+      bool familyOnly, Map<String, int> uses) {
+    final options = HailData.places
+        .where((p) =>
+            p.category == category &&
+            p.hasLocation &&
+            !today.contains(p.id) &&
+            (!familyOnly || p.facilities.contains(_familyTag)))
+        .toList();
+    if (options.isEmpty) return null;
+    double km(PlaceModel p) =>
+        distanceKm(near.latitude!, near.longitude!, p.latitude!, p.longitude!);
+    options.sort((a, b) {
+      final byUse = (uses[a.id] ?? 0).compareTo(uses[b.id] ?? 0);
+      return byUse != 0 ? byUse : km(a).compareTo(km(b));
+    });
+    final pick = options.first;
+    today.add(pick.id);
+    uses[pick.id] = (uses[pick.id] ?? 0) + 1;
+    return pick;
   }
 
   static String _note(PlaceModel place,
-      {required bool withKids, required bool nearSunset}) {
+      {required String role, required bool withKids, required bool nearSunset}) {
     final firstSentence = place.description.split(RegExp(r'[.،]')).first.trim();
+    if (role.isNotEmpty) return '$role: $firstSentence';
     final extras = <String>[
       if (_km(place) > _farKm) 'على بعد حوالي ${_km(place).round()} كم، خصص لها وقتًا كافيًا',
       if (withKids && place.facilities.contains('ألعاب أطفال')) 'فيه ألعاب للأطفال',
@@ -245,4 +246,15 @@ class TripPlanner {
       RegExp(r'\d'), (m) => '٠١٢٣٤٥٦٧٨٩'[int.parse(m[0]!)]);
 
   static String _dayName(int i) => const ['الأول', 'الثاني', 'الثالث'][i];
+}
+
+/// A planned stop before it becomes a [TripStop]; [place] is null when no
+/// suitable restaurant or café exists.
+class _Stop {
+  final int minutes;
+  final PlaceModel? place;
+  final String role; // غداء / قهوة / عشاء, empty for the activity
+  const _Stop(this.minutes, this.place, this.role);
+
+  _Stop at(int minutes) => _Stop(minutes, place, role);
 }

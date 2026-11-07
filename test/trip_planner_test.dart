@@ -24,7 +24,34 @@ void main() {
     expect(ids.toSet().length, ids.length, reason: 'no repeated stops');
   });
 
-  test('two-day nature trip gives a far place its own day', () {
+  test('each full day: one activity, lunch and dinner, a café, ending in the evening', () {
+    final plan = TripPlanner.plan(const TripAnswers(
+      duration: 'ثلاثة أيام',
+      companion: 'أصدقاء',
+      interests: {'الحدائق', 'الطبيعة والجبال', 'التراث والتاريخ'},
+      time: 'لا يهم',
+    ));
+    expect(plan.days, hasLength(3));
+    for (final day in plan.days) {
+      final places = day.stops.map((s) => place(s.placeId)).toList();
+      expect(places.where((p) => !p.category.isFood), hasLength(1));
+      expect(places.where((p) => p.category == PlaceCategory.restaurant), hasLength(2));
+      expect(places.where((p) => p.category == PlaceCategory.cafe), hasLength(1));
+      expect(day.stops.last.time, contains('مساءً'));
+      expect(day.stops.last.note, startsWith('عشاء'));
+    }
+    final activities = [
+      for (final day in plan.days)
+        day.stops.map((s) => place(s.placeId)).firstWhere((p) => !p.category.isFood),
+    ];
+    expect(activities.map((p) => p.id).toSet(), hasLength(3), reason: 'no repeated activity');
+    for (var i = 1; i < activities.length; i++) {
+      expect(activities[i].category, isNot(activities[i - 1].category),
+          reason: 'consecutive days should not both be ${activities[i].category.name}');
+    }
+  });
+
+  test('two-day trip: morning start, a far place can fill day two', () {
     final plan = TripPlanner.plan(const TripAnswers(
       duration: 'يومان',
       companion: 'أصدقاء',
@@ -32,11 +59,23 @@ void main() {
       time: 'الصباح',
     ));
     expect(plan.days, hasLength(2));
-    final day2Sights = plan.days[1].stops
-        .map((s) => place(s.placeId))
-        .where((p) => !p.category.isFood);
-    expect(day2Sights, hasLength(1));
     expect(plan.days.first.stops.first.time, contains('صباحًا'));
+    final day1Activity =
+        plan.days.first.stops.map((s) => place(s.placeId)).firstWhere((p) => !p.category.isFood);
+    expect(['jubbah', 'fayd', 'shuwaymis', 'nafud', 'hutaymah'], isNot(contains(day1Activity.id)),
+        reason: 'day one stays near the city');
+  });
+
+  test('half day: activity, coffee and one meal', () {
+    final plan = TripPlanner.plan(const TripAnswers(
+      duration: 'نصف يوم',
+      companion: 'بمفردي',
+      interests: {'الحدائق'},
+      time: 'المساء',
+    ));
+    final places = plan.days.single.stops.map((s) => place(s.placeId)).toList();
+    expect(places, hasLength(3));
+    expect(places.where((p) => p.category == PlaceCategory.restaurant), hasLength(1));
   });
 
   test('no car keeps everything inside the city', () {
