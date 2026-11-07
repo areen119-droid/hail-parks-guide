@@ -222,6 +222,7 @@ class HailData {
       location: 'جبال أجا، محافظة موقق',
       latitude: 27.6587,
       longitude: 41.4505,
+      image: 'assets/places/tuwarin_1.jpg',
     ),
     PlaceModel(
       id: 'fayd',

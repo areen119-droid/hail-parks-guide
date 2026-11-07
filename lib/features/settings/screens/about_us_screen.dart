@@ -111,7 +111,7 @@ class AboutUsScreen extends StatelessWidget {
                     'صور الأماكن (Wikimedia Commons): هيئة التراث (قلعة أعيرف، قصر '
                     'القشلة، قصر برزان، الشويمس) CC BY-SA 4.0؛ وكالة الأنباء السعودية '
                     'و saudipics (جبال أجا، القشلة) CC BY-SA 4.0؛ Iain Cheyne (قلعة '
-                    'أعيرف) CC BY-SA 4.0؛ cvhail (شعيب جو) و Khalid Alhallabi (جبل '
+                    'أعيرف) CC BY-SA 4.0؛ Annurios (توارن) CC BY-SA 4.0؛ cvhail (شعيب جو) و Khalid Alhallabi (جبل '
                     'السمراء) CC BY 3.0؛ Prof. Mortel (جبة، فيد) CC BY 2.0؛ NASA '
                     '(النفود) و Gertrude Bell (قصر برزان 1914) ملكية عامة\n'
                     'الخطوط: Amiri و Tajawal، رخصة SIL Open Font License',
