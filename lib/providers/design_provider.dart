@@ -17,6 +17,10 @@ enum AppDesign {
 class DesignProvider extends ChangeNotifier {
   static const _key = 'app_design';
 
+  /// The app ships with the journal design only. Set to true to let users
+  /// switch back to the classic design (its code is kept in lib/features).
+  static const bool switchable = false;
+
   AppDesign _design = AppDesign.journal;
   bool _loaded = false;
 
@@ -41,7 +45,9 @@ class DesignProvider extends ChangeNotifier {
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_key);
-    _design = AppDesign.values.where((d) => d.name == saved).firstOrNull ?? _design;
+    if (switchable) {
+      _design = AppDesign.values.where((d) => d.name == saved).firstOrNull ?? _design;
+    }
     _loaded = true;
     notifyListeners();
   }

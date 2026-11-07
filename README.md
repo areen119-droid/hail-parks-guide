@@ -16,8 +16,8 @@ Everything runs on the device; no backend, no API keys.
 
 ## Two designs
 
-The app has two looks that share the same data, guide and planner. Switch in the
-profile's settings (journal) or the settings screen (classic).
+The app ships with the journal design. The classic design's code is kept; set
+`DesignProvider.switchable` to `true` to offer a switch in settings again.
 
 - **Journal** (`lib/journal/`, the default): a field journal based on Hail's rock art.
   Limestone paper, basalt ink, red ochre, Reem Kufi headings, ruled lines.

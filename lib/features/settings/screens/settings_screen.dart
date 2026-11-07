@@ -18,7 +18,8 @@ class SettingsScreen extends StatelessWidget {
         favorites.favoritePlaces.length + favorites.favoritePlants.length;
     if (count == 0) {
       messenger.showSnackBar(
-          const SnackBar(content: Text('مفضلتك فارغة، لا يوجد ما يُمسح')));
+        const SnackBar(content: Text('مفضلتك فارغة، لا يوجد ما يُمسح')),
+      );
       return;
     }
     final confirmed = await showConfirmationDialog(
@@ -53,12 +54,14 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              _SettingsTile(
-                icon: Icons.auto_stories_outlined,
-                title: 'جرّب التصميم الجديد',
-                onTap: () =>
-                    context.read<DesignProvider>().setDesign(AppDesign.journal),
-              ),
+              if (DesignProvider.switchable)
+                _SettingsTile(
+                  icon: Icons.auto_stories_outlined,
+                  title: 'جرّب التصميم الجديد',
+                  onTap: () => context.read<DesignProvider>().setDesign(
+                    AppDesign.journal,
+                  ),
+                ),
               _SettingsTile(
                 icon: Icons.info_outline,
                 title: 'عن التطبيق',
@@ -109,7 +112,10 @@ class _SettingsTile extends StatelessWidget {
           title,
           style: TextStyle(color: color, fontWeight: FontWeight.w700),
         ),
-        trailing: const Icon(Icons.chevron_left, color: AppColors.textSecondary),
+        trailing: const Icon(
+          Icons.chevron_left,
+          color: AppColors.textSecondary,
+        ),
         onTap: onTap,
       ),
     );

@@ -8,7 +8,6 @@ import 'package:hail_parks_guide/journal/journal_place.dart';
 import 'package:hail_parks_guide/journal/journal_plants.dart';
 import 'package:hail_parks_guide/journal/journal_theme.dart';
 import 'package:hail_parks_guide/journal/journal_widgets.dart';
-import 'package:hail_parks_guide/providers/design_provider.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
 /// "My journal": the account, saved places and plants, and settings
@@ -45,7 +44,6 @@ class _JournalProfileState extends State<JournalProfile> {
   @override
   Widget build(BuildContext context) {
     final favorites = context.watch<FavoritesProvider>();
-    final designs = context.watch<DesignProvider>();
     const user = HailData.currentUser;
 
     return SafeArea(
@@ -115,28 +113,6 @@ class _JournalProfileState extends State<JournalProfile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('شكل التطبيق', style: J.label),
-                const SizedBox(height: 6),
-                for (final d in AppDesign.values)
-                  InkWell(
-                    onTap: () => designs.setDesign(d),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 13),
-                      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: J.rule))),
-                      child: Row(children: [
-                        Container(
-                          width: 18,
-                          height: 18,
-                          decoration: BoxDecoration(
-                            color: designs.design == d ? J.ink : Colors.transparent,
-                            border: Border.all(color: J.ink, width: 1.6),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(d.label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      ]),
-                    ),
-                  ),
                 _settingsRow('عن التطبيق', () => Navigator.push(
                     context, MaterialPageRoute(builder: (_) => const AboutUsScreen()))),
                 _settingsRow('مسح المحفوظات', _clear, color: J.ochre),
