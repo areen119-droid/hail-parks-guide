@@ -12,6 +12,21 @@ class InitiativeData {
 
   static const String title = 'مبادرة غرس في منتزه الأمير سعود بن عبدالمحسن';
 
+  // The initiative told as a news article.
+  static const String kicker = 'مبادرة مجتمعية';
+  static const String headline =
+      'زوار منتزه الأمير سعود يزرعون شتلاتهم ويتابعونها بتطبيق «غرس نيشن»';
+  static const String standfirst =
+      'مبادرة ميدانية في حائل جرّب فيها الزوار تطبيقًا يربط كل شتلة بموقعها وبمن زرعها.';
+  static const String byline = 'فريق غرس نيشن';
+  static const String quote =
+      'كيف نجعل زراعة شجرة والعناية بها شيئًا يشارك فيه الجميع ويتابعونه؟';
+  static const String quoteSource = 'السؤال الذي بدأت منه الفكرة';
+
+  /// Photos from the day, with captions: (asset path, caption). Until there
+  /// are photos, the article shows the logo.
+  static const List<(String, String)> photos = [];
+
   static const String summary =
       'قبل هذا الدليل طوّرنا تطبيق «غرس نيشن» لتشجيع الزراعة والعناية بالأشجار، '
       'ونفّذنا به مبادرة ميدانية في منتزه الأمير سعود بن عبدالمحسن، حضرها الزوار '

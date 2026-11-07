@@ -54,8 +54,10 @@ class _JournalHomeState extends State<JournalHome> {
           _masthead(),
           _placeOfTheDay(today),
           _plannerBlock(),
+          const JSection(number: 1, title: 'أخبار'),
+          _newsTeaser(),
           JSection(
-            number: 1,
+            number: 2,
             title: 'فهرس الأماكن',
             action: 'على الخريطة',
             onAction: () => context.read<NavigationProvider>().selectTab(NavigationProvider.mapTab),
@@ -80,8 +82,6 @@ class _JournalHomeState extends State<JournalHome> {
             ),
           for (var i = 0; i < places.length; i++)
             _IndexRow(number: i + 1, place: places[i], onTap: () => _open(places[i])),
-          const JSection(number: 2, title: 'من أعمالنا'),
-          _initiativeBlock(),
           const JSection(number: 3, title: 'أين تأكل؟'),
           _foodColumns(),
           const JSection(number: 4, title: 'نبتة اليوم'),
@@ -183,35 +183,52 @@ class _JournalHomeState extends State<JournalHome> {
     );
   }
 
-  Widget _initiativeBlock() {
+  /// The Ghars Nation story as a news teaser: kicker, headline, standfirst,
+  /// byline and a thumbnail, like the front page of a paper.
+  Widget _newsTeaser() {
+    final photo = InitiativeData.photos.isNotEmpty ? InitiativeData.photos.first.$1 : null;
     return InkWell(
       onTap: () => Navigator.push(
           context, MaterialPageRoute(builder: (_) => const JournalInitiative())),
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(J.gutter, 16, J.gutter, 0),
-        padding: const EdgeInsets.all(18),
-        color: J.paperDeep,
-        child: Row(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(J.gutter, 16, J.gutter, 0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('مبادرة ${InitiativeData.appName}', style: J.label),
-                  const SizedBox(height: 4),
-                  Text('زرعنا مع زوار منتزه الأمير سعود', style: J.heading),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'قبل هذا الدليل طوّرنا تطبيقًا للزراعة، وجرّبه الناس في المنتزه.',
-                    style: J.meta,
-                  ),
-                  const JLink(label: 'اقرأ القصة'),
-                ],
-              ),
+            const Text(InitiativeData.kicker, style: J.label),
+            const SizedBox(height: 4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(InitiativeData.headline,
+                      style: J.heading.copyWith(fontSize: 22, height: 1.4)),
+                ),
+                const SizedBox(width: 14),
+                Container(
+                  width: 96,
+                  height: 96,
+                  color: Colors.white,
+                  padding: photo == null ? const EdgeInsets.all(8) : null,
+                  child: photo == null
+                      ? Image.asset(InitiativeData.logo)
+                      : Image.asset(photo, fit: BoxFit.cover),
+                ),
+              ],
             ),
-            const SizedBox(width: 14),
-            Image.asset(InitiativeData.logo, width: 84),
+            const SizedBox(height: 8),
+            const Text(InitiativeData.standfirst, style: J.meta),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(
+                child: Text(
+                  J.digits([InitiativeData.byline, ?InitiativeData.date].join(' · ')),
+                  style: J.meta.copyWith(fontSize: 12.5),
+                ),
+              ),
+              const JLink(label: 'اقرأ الخبر'),
+            ]),
+            const JRule(),
           ],
         ),
       ),
