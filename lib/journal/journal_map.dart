@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -12,8 +11,9 @@ import 'package:hail_parks_guide/journal/journal_widgets.dart';
 import 'package:hail_parks_guide/models/place_model.dart';
 import 'package:hail_parks_guide/providers/navigation_provider.dart';
 
-/// The map in the journal design: diamond pins in each kind's color, text
-/// tabs to filter, and a flat panel for the selected place.
+/// The map in the journal design: pins with each kind's symbol and color,
+/// a legend that explains them, text tabs to filter, and a flat panel for
+/// the selected place.
 class JournalMap extends StatefulWidget {
   const JournalMap({super.key});
 
@@ -30,6 +30,7 @@ class _JournalMapState extends State<JournalMap> {
   PlaceCategory? _category;
   PlaceModel? _selected;
   LatLng? _user;
+  bool _legendOpen = false;
 
   List<PlaceModel> get _visible => HailData.places
       .where((p) => p.hasLocation && (_category == null || p.category == _category))
@@ -176,6 +177,11 @@ class _JournalMapState extends State<JournalMap> {
                   onPressed: _myLocation,
                 ),
               ),
+              PositionedDirectional(
+                start: 14,
+                top: 14,
+                child: _legend(),
+              ),
               if (_selected != null)
                 Positioned(left: 0, right: 0, bottom: 0, child: _panel(_selected!)),
             ],
@@ -185,30 +191,117 @@ class _JournalMapState extends State<JournalMap> {
     );
   }
 
-  /// A diamond in the place's color; the selected one is larger and shows
-  /// its name.
+  /// A square pin in the place's color with its symbol; the selected one is
+  /// larger and inked.
   Marker _pin(PlaceModel place) {
     final selected = place.id == _selected?.id;
-    final side = selected ? 22.0 : 16.0;
+    final side = selected ? 40.0 : 30.0;
     return Marker(
       point: _point(place),
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       child: GestureDetector(
         onTap: () => _select(place),
         child: Center(
-          child: Transform.rotate(
-            angle: math.pi / 4,
-            child: Container(
-              width: side,
-              height: side,
-              decoration: BoxDecoration(
-                color: selected ? J.ink : J.category(place.category),
-                border: Border.all(color: J.paper, width: 2.5),
-              ),
+          child: Container(
+            width: side,
+            height: side,
+            decoration: BoxDecoration(
+              color: selected ? J.ink : J.category(place.category),
+              border: Border.all(color: J.paper, width: 2.5),
+              boxShadow: const [BoxShadow(color: Color(0x40000000), blurRadius: 3, offset: Offset(0, 1))],
             ),
+            child: Icon(J.icon(place.category), size: side * 0.58, color: J.onInk),
           ),
         ),
+      ),
+    );
+  }
+
+  /// The map key: a button that opens a list of what each symbol means.
+  /// Tapping a row shows only that kind of place.
+  Widget _legend() {
+    if (!_legendOpen) {
+      return Material(
+        color: J.paper,
+        shape: const RoundedRectangleBorder(side: BorderSide(color: J.ink, width: 1.4)),
+        child: InkWell(
+          onTap: () => setState(() => _legendOpen = true),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              for (final c in [PlaceCategory.park, PlaceCategory.heritage, PlaceCategory.restaurant])
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 3),
+                  child: Container(
+                    width: 18,
+                    height: 18,
+                    color: J.category(c),
+                    child: Icon(J.icon(c), size: 12, color: J.onInk),
+                  ),
+                ),
+              const SizedBox(width: 6),
+              const Text('دليل الرموز', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+            ]),
+          ),
+        ),
+      );
+    }
+    return Container(
+      width: 220,
+      decoration: BoxDecoration(
+        color: J.paper,
+        border: Border.all(color: J.ink, width: 1.4),
+      ),
+      padding: const EdgeInsets.fromLTRB(14, 6, 6, 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            const Expanded(child: Text('دليل الرموز', style: J.label)),
+            IconButton(
+              tooltip: 'إغلاق',
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.close, size: 20),
+              onPressed: () => setState(() => _legendOpen = false),
+            ),
+          ]),
+          for (final c in PlaceCategory.values)
+            InkWell(
+              onTap: () => _filter(_category == c ? null : c),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(children: [
+                  Container(
+                    width: 26,
+                    height: 26,
+                    color: J.category(c),
+                    child: Icon(J.icon(c), size: 16, color: J.onInk),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      c.label,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: _category == c ? FontWeight.w700 : FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    J.digits('${HailData.places.where((p) => p.category == c && p.hasLocation).length}'),
+                    style: J.meta,
+                  ),
+                  const SizedBox(width: 8),
+                ]),
+              ),
+            ),
+          const Padding(
+            padding: EdgeInsetsDirectional.only(top: 4, end: 8),
+            child: Text('اضغط على نوع لعرضه وحده', style: TextStyle(fontSize: 12, color: J.inkSoft)),
+          ),
+        ],
       ),
     );
   }

@@ -23,6 +23,15 @@ class J {
         PlaceCategory.cafe => const Color(0xFF6B4A5E),
       };
 
+  /// The symbol for each kind of place on the map and its legend.
+  static IconData icon(PlaceCategory c) => switch (c) {
+        PlaceCategory.park => Icons.park, // a tree
+        PlaceCategory.nature => Icons.landscape, // mountains
+        PlaceCategory.heritage => Icons.fort, // a castle, like A'arif or Al-Qishlah
+        PlaceCategory.restaurant => Icons.restaurant,
+        PlaceCategory.cafe => Icons.local_cafe,
+      };
+
   // Type: Reem Kufi for headings, Tajawal for reading.
   static const String kufi = 'ReemKufi';
   static const String body = 'Tajawal';
