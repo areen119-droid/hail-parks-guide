@@ -11,6 +11,17 @@ Everything runs on the device; no backend, no API keys.
 - **Guide (المرشد)**: a chatbot trained on Hail questions, and a trip planner
 - **Plants**: plants of the region with photos and details
 - **Profile**: one built-in account with favorite places and plants (saved on the device)
+- **Our earlier work**: a page about Ghars Nation, our planting app, and the initiative we ran
+  with it in Prince Saud bin Abdulmohsen Park (`lib/data/initiative_data.dart`)
+
+## Two designs
+
+The app has two looks that share the same data, guide and planner. Switch in the
+profile's settings (journal) or the settings screen (classic).
+
+- **Journal** (`lib/journal/`, the default): a field journal based on Hail's rock art.
+  Limestone paper, basalt ink, red ochre, Reem Kufi headings, ruled lines.
+- **Classic** (`lib/features/`): the earlier green and sand design.
 
 ## The guide's AI model
 

@@ -95,6 +95,10 @@ flutter:
         - asset: assets/fonts/Amiri-Regular.ttf
         - asset: assets/fonts/Amiri-Bold.ttf
           weight: 700
+    # Variable font (weight 400 to 700) for the "journal" design's headings.
+    - family: ReemKufi
+      fonts:
+        - asset: assets/fonts/ReemKufi-Variable.ttf
 
   #  - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

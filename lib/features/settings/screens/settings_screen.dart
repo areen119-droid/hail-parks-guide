@@ -5,6 +5,7 @@ import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/confirmation_dialog.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/features/settings/screens/about_us_screen.dart';
+import 'package:hail_parks_guide/providers/design_provider.dart';
 import 'package:hail_parks_guide/providers/favorites_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -52,6 +53,12 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
+              _SettingsTile(
+                icon: Icons.auto_stories_outlined,
+                title: 'جرّب التصميم الجديد: دفتر الرحلة',
+                onTap: () =>
+                    context.read<DesignProvider>().setDesign(AppDesign.journal),
+              ),
               _SettingsTile(
                 icon: Icons.info_outline,
                 title: 'عن التطبيق',

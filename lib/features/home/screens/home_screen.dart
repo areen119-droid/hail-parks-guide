@@ -4,6 +4,8 @@ import 'package:hail_parks_guide/app/theme.dart';
 import 'package:hail_parks_guide/core/constants/app_color.dart';
 import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 import 'package:hail_parks_guide/data/hail_data.dart';
+import 'package:hail_parks_guide/data/initiative_data.dart';
+import 'package:hail_parks_guide/features/initiative/initiative_screen.dart';
 import 'package:hail_parks_guide/features/home/widget/facts_widget.dart';
 import 'package:hail_parks_guide/features/home/widget/place_card.dart';
 import 'package:hail_parks_guide/features/home/widget/plants_widget.dart';
@@ -177,6 +179,50 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Our earlier Ghars Nation app and its planting initiative in the park.
+  Widget _buildInitiative(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const InitiativeScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Image.asset(InitiativeData.logo, width: 72),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'مبادرة ${InitiativeData.appName}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'زرعنا مع زوار منتزه الأمير سعود بن عبدالمحسن باستخدام تطبيقنا',
+                    style: AppText.caption,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_left, color: AppColors.textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPanel(BuildContext context, List<PlaceModel> places) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, kNavBarSpace),
@@ -234,6 +280,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   FoodCard(place: _foodPlaces[index]),
             ),
           ),
+          const SizedBox(height: 24),
+          const SectionHeader(title: 'من أعمالنا'),
+          const SizedBox(height: 12),
+          _buildInitiative(context),
           const SizedBox(height: 24),
           const SectionHeader(title: 'نبتة اليوم'),
           const SizedBox(height: 12),
