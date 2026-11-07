@@ -38,7 +38,7 @@ class _JournalPlantsState extends State<JournalPlants> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('المعشبة', style: J.display.copyWith(fontSize: 40)),
+                Text('نباتات حائل', style: J.display.copyWith(fontSize: 40)),
                 Text(J.digits('${HailData.plants.length} نباتات من حائل وحدائقها'), style: J.meta),
                 const SizedBox(height: 12),
                 const JRule(color: J.ink),
@@ -95,7 +95,7 @@ class _JournalPlantsState extends State<JournalPlants> {
               ),
             ),
             IconButton(
-              tooltip: saved ? 'أزل من دفتري' : 'احفظ في دفتري',
+              tooltip: saved ? 'أزل من المحفوظات' : 'احفظ',
               onPressed: () => toggleFavoritePlant(context, plant),
               icon: Icon(saved ? Icons.bookmark : Icons.bookmark_border,
                   color: saved ? J.ochre : J.ink),
@@ -126,7 +126,7 @@ class JournalPlantDetail extends StatelessWidget {
                 JSquareButton(
                     icon: Icons.arrow_back, tooltip: 'رجوع', onPressed: () => Navigator.pop(context)),
                 const Spacer(),
-                Text('المعشبة', style: J.label.copyWith(color: J.inkSoft)),
+                Text('نباتات حائل', style: J.label.copyWith(color: J.inkSoft)),
               ]),
             ),
             AspectRatio(aspectRatio: 1, child: SmartImage(imageData: plant.image)),
@@ -148,7 +148,7 @@ class JournalPlantDetail extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: () => toggleFavoritePlant(context, plant),
                     icon: Icon(saved ? Icons.bookmark : Icons.bookmark_border, size: 20),
-                    label: Text(saved ? 'في دفتري' : 'احفظ في دفتري'),
+                    label: Text(saved ? 'محفوظ' : 'احفظ'),
                   ),
                 ],
               ),

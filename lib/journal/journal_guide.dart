@@ -338,10 +338,10 @@ class _Timetable extends StatelessWidget {
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(
         content: Text(fresh.isEmpty
-            ? 'كل أماكن الخطة في دفترك'
-            : 'حُفظت ${J.digits('${fresh.length}')} أماكن في دفترك'),
+            ? 'كل أماكن الخطة محفوظة'
+            : 'حُفظت ${J.digits('${fresh.length}')} أماكن في محفوظاتك'),
         action: SnackBarAction(
-          label: 'افتح دفتري',
+          label: 'افتح ملفي',
           onPressed: () => nav.selectTab(NavigationProvider.profileTab),
         ),
       ));

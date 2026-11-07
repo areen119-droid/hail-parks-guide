@@ -28,13 +28,13 @@ class _JournalProfileState extends State<JournalProfile> {
     final messenger = ScaffoldMessenger.of(context);
     final count = favorites.favoritePlaces.length + favorites.favoritePlants.length;
     if (count == 0) {
-      messenger.showSnackBar(const SnackBar(content: Text('دفترك فارغ، لا يوجد ما يُمسح')));
+      messenger.showSnackBar(const SnackBar(content: Text('لا توجد محفوظات لمسحها')));
       return;
     }
     final ok = await showConfirmationDialog(
       context,
       title: 'مسح المحفوظات',
-      message: 'ستُزال ${J.digits('$count')} عناصر من دفترك. لا يمكن التراجع عن ذلك.',
+      message: 'ستُزال ${J.digits('$count')} عناصر من محفوظاتك. لا يمكن التراجع عن ذلك.',
       confirmLabel: 'مسح الكل',
     );
     if (!ok) return;
@@ -58,7 +58,7 @@ class _JournalProfileState extends State<JournalProfile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('دفتري', style: J.label),
+                const Text('ملفي', style: J.label),
                 Text(user.name, style: J.display.copyWith(fontSize: 38)),
                 Text('@${user.username} · ${user.city}', textDirection: TextDirection.rtl, style: J.meta),
                 if (user.bio.isNotEmpty) ...[

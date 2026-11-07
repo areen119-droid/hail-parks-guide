@@ -13,7 +13,7 @@ import 'package:hail_parks_guide/providers/navigation_provider.dart';
 class JournalShell extends StatelessWidget {
   const JournalShell({super.key});
 
-  static const _labels = ['الدفتر', 'الخريطة', 'المرشد', 'المعشبة', 'دفتري'];
+  static const _labels = ['الرئيسية', 'الخريطة', 'المرشد', 'النباتات', 'ملفي'];
 
   @override
   Widget build(BuildContext context) {

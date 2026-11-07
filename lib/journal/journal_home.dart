@@ -25,21 +25,42 @@ class _JournalHomeState extends State<JournalHome> {
   PlaceCategory? _category = PlaceCategory.park;
   String _query = '';
 
-  static final _withPhotos = HailData.places
-      .where((p) => !p.category.isFood && p.image.isNotEmpty)
-      .toList();
+  final _featured = PageController();
+  int _featuredPage = 0;
+
+  @override
+  void dispose() {
+    _featured.dispose();
+    super.dispose();
+  }
 
   int get _dayOfYear {
     final now = DateTime.now();
     return now.difference(DateTime(now.year)).inDays;
   }
 
+  /// Today's three places: one with a photo from each main category (a park,
+  /// a nature spot, a heritage site), changing every day.
+  List<PlaceModel> get _placesOfTheDay => [
+        for (final category in PlaceCategory.main)
+          if (HailData.places
+              .where((p) => p.category == category && p.image.isNotEmpty)
+              .toList()
+              case final options when options.isNotEmpty)
+            options[_dayOfYear % options.length],
+      ];
+
+  void _showFeatured(int page, int count) => _featured.animateToPage(
+        page % count,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+
   void _open(PlaceModel place) => Navigator.push(
       context, MaterialPageRoute(builder: (_) => JournalPlace(place: place)));
 
   @override
   Widget build(BuildContext context) {
-    final today = _withPhotos[_dayOfYear % _withPhotos.length];
     final query = _query.trim();
     final places = HailData.places.where((p) =>
         !p.category.isFood &&
@@ -52,7 +73,7 @@ class _JournalHomeState extends State<JournalHome> {
         padding: const EdgeInsets.only(bottom: 40),
         children: [
           _masthead(),
-          _placeOfTheDay(today),
+          _featuredPlaces(_placesOfTheDay),
           _plannerBlock(),
           const JSection(number: 1, title: 'أخبار'),
           _newsTeaser(),
@@ -100,7 +121,7 @@ class _JournalHomeState extends State<JournalHome> {
         children: [
           Row(
             children: [
-              Text('دفتر الرحلة', style: J.label.copyWith(color: J.inkSoft)),
+              Text('دليل حدائق حائل', style: J.label.copyWith(color: J.inkSoft)),
               const Spacer(),
               Text(journalDate(DateTime.now()), style: J.label.copyWith(color: J.inkSoft)),
             ],
@@ -124,19 +145,93 @@ class _JournalHomeState extends State<JournalHome> {
     );
   }
 
-  Widget _placeOfTheDay(PlaceModel place) {
+  /// Today's places as a slideshow: swipe, or use the arrows on either side.
+  Widget _featuredPlaces(List<PlaceModel> places) {
+    if (places.isEmpty) return const SizedBox.shrink();
+    final page = _featuredPage.clamp(0, places.length - 1);
+    final place = places[page];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AspectRatio(
+          aspectRatio: 16 / 10,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              PageView.builder(
+                controller: _featured,
+                itemCount: places.length,
+                onPageChanged: (i) => setState(() => _featuredPage = i),
+                itemBuilder: (_, i) => GestureDetector(
+                  onTap: () => _open(places[i]),
+                  child: JPhoto(place: places[i]),
+                ),
+              ),
+              if (places.length > 1) ...[
+                // Pages run right to left, so the next place is on the left.
+                PositionedDirectional(
+                  start: 12,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: JSquareButton(
+                      icon: Icons.arrow_back,
+                      tooltip: 'السابق',
+                      onPressed: () => _showFeatured(page - 1 + places.length, places.length),
+                    ),
+                  ),
+                ),
+                PositionedDirectional(
+                  end: 12,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: JSquareButton(
+                      icon: Icons.arrow_forward,
+                      tooltip: 'التالي',
+                      onPressed: () => _showFeatured(page + 1, places.length),
+                    ),
+                  ),
+                ),
+                PositionedDirectional(
+                  start: 12,
+                  bottom: 12,
+                  child: Container(
+                    color: J.ink,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    child: Text(
+                      J.digits('${page + 1} / ${places.length}'),
+                      style: const TextStyle(color: J.onInk, fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        _featuredText(place),
+      ],
+    );
+  }
+
+  Widget _featuredText(PlaceModel place) {
     return InkWell(
       onTap: () => _open(place),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AspectRatio(aspectRatio: 16 / 10, child: JPhoto(place: place)),
           Padding(
             padding: const EdgeInsets.fromLTRB(J.gutter, 14, J.gutter, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('مكان اليوم', style: J.label),
+                Row(children: [
+                  const Text('أماكن اليوم', style: J.label),
+                  const Text('  ·  ', style: J.meta),
+                  JCategoryMark(place.category),
+                  const SizedBox(width: 6),
+                  Text(place.category.label, style: J.meta),
+                ]),
                 const SizedBox(height: 2),
                 Text(place.name, style: J.title),
                 const SizedBox(height: 4),

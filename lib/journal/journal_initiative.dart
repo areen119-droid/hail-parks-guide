@@ -41,7 +41,7 @@ class JournalInitiative extends StatelessWidget {
                     onPressed: () => Navigator.pop(context),
                   ),
                   const Spacer(),
-                  Text('أخبار الدفتر', style: J.kufiStyle(18)),
+                  Text('أخبار الدليل', style: J.kufiStyle(18)),
                 ],
               ),
             ),

@@ -92,7 +92,7 @@ class _JournalPlaceState extends State<JournalPlace> {
                         child: OutlinedButton.icon(
                           onPressed: () => toggleFavoritePlace(context, place),
                           icon: Icon(saved ? Icons.bookmark : Icons.bookmark_border, size: 20),
-                          label: Text(saved ? 'في دفتري' : 'احفظ'),
+                          label: Text(saved ? 'محفوظ' : 'احفظ'),
                         ),
                       ),
                     ],

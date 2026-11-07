@@ -4,10 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// The app's two looks. Both use the same data, guide and planner.
 enum AppDesign {
   /// Rock-art field journal: paper, basalt ink and red ochre.
-  journal('دفتر الرحلة'),
+  journal('التصميم الجديد'),
 
   /// The earlier green and sand design.
-  classic('الكلاسيكي');
+  classic('التصميم الكلاسيكي');
 
   final String label;
   const AppDesign(this.label);

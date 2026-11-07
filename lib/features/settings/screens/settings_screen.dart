@@ -55,7 +55,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _SettingsTile(
                 icon: Icons.auto_stories_outlined,
-                title: 'جرّب التصميم الجديد: دفتر الرحلة',
+                title: 'جرّب التصميم الجديد',
                 onTap: () =>
                     context.read<DesignProvider>().setDesign(AppDesign.journal),
               ),
