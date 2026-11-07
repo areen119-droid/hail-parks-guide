@@ -75,6 +75,12 @@ class GuideModel {
     );
   }
 
+  /// Whether at least one whole word of [question] appeared in the training
+  /// data. If none did, the model is only guessing from letter pieces.
+  bool knowsAnyWord(String question) => GuideFeatures.normalize(question)
+      .split(' ')
+      .any((word) => _featureIndex.containsKey('w:$word'));
+
   IntentPrediction predict(String question) {
     final input = List<double>.filled(_featureIndex.length, 0);
     for (final feature in GuideFeatures.extract(question)) {

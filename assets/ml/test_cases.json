@@ -2,26 +2,71 @@
   {
     "question": "وين اروح مع عيالي",
     "label": "family_kids",
-    "confidence": 0.9999970197677612
+    "confidence": 0.9999926090240479
   },
   {
     "question": "ابي اكل بيتزا",
     "label": "restaurants",
-    "confidence": 0.9999897480010986
+    "confidence": 0.9999980926513672
   },
   {
     "question": "وين اشوف الغروب",
     "label": "sunset_views",
-    "confidence": 0.9999970197677612
+    "confidence": 0.9999985694885254
   },
   {
     "question": "شكرا",
     "label": "thanks",
-    "confidence": 0.9999555349349976
+    "confidence": 0.9999724626541138
   },
   {
     "question": "جبة",
     "label": "rock_art_unesco",
-    "confidence": 0.9995275735855103
+    "confidence": 0.9999094009399414
+  },
+  {
+    "question": "ودي اطلع مع اهلي مكان حلو",
+    "label": "family_kids",
+    "confidence": 0.686618983745575
+  },
+  {
+    "question": "وين القى قهوة مختصة",
+    "label": "cafes",
+    "confidence": 1.0
+  },
+  {
+    "question": "وش قصة حاتم الطائي",
+    "label": "heritage_history",
+    "confidence": 0.9995105266571045
+  },
+  {
+    "question": "ابي اخيم مع ربعي",
+    "label": "camping_stars",
+    "confidence": 0.9999961853027344
+  },
+  {
+    "question": "كم الساعه الحين بالضبط",
+    "label": "out_of_scope",
+    "confidence": 0.9999992847442627
+  },
+  {
+    "question": "ما ادري والله",
+    "label": "out_of_scope",
+    "confidence": 0.9998757839202881
+  },
+  {
+    "question": "عطني نكته حلوه",
+    "label": "out_of_scope",
+    "confidence": 0.9999966621398926
+  },
+  {
+    "question": "كم سعر الذهب اليوم",
+    "label": "out_of_scope",
+    "confidence": 1.0
+  },
+  {
+    "question": "مين فاز امس",
+    "label": "out_of_scope",
+    "confidence": 0.9525153040885925
   }
 ]

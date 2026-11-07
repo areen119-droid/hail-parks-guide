@@ -146,14 +146,17 @@ json.dump({"feature_version": FEATURE_VERSION, "features": vocab},
           open("vocab.json", "w", encoding="utf-8"), ensure_ascii=False)
 json.dump(labels, open("labels.json", "w", encoding="utf-8"), ensure_ascii=False)
 
-checks = ["وين اروح مع عيالي", "ابي اكل بيتزا", "وين اشوف الغروب", "شكرا", "جبة"]
-cases = []
-for q in checks:
-    probs = final_model.predict(vectorize(q)[None, :], verbose=0)[0]
-    cases.append({"question": q, "label": labels[int(probs.argmax())],
+cases, failed = [], 0
+for check in data["checks"]["questions"]:
+    probs = final_model.predict(vectorize(check["question"])[None, :], verbose=0)[0]
+    label = labels[int(probs.argmax())]
+    ok = label == check["expect"]
+    failed += not ok
+    print(("PASS" if ok else "FAIL"), f"{probs.max():.0%}", label, "<-", check["question"])
+    cases.append({"question": check["question"], "label": label,
                   "confidence": float(probs.max())})
+print(f"\\n{len(cases) - failed}/{len(cases)} check questions correct")
 json.dump(cases, open("test_cases.json", "w", encoding="utf-8"), ensure_ascii=False, indent=2)
-print(json.dumps(cases, ensure_ascii=False, indent=2))
 """),
     code("""
 import zipfile
