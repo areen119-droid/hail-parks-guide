@@ -6,14 +6,6 @@ import 'package:hail_parks_guide/core/widgets/custom_button.dart';
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
 
-  static const _team = [
-    'أرين إبراهيم الفقيه',
-    'رهف الضمادي',
-    'ريم الفهيد',
-    'فوزيه القحطاني',
-    'العنود الصقيه',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,21 +76,9 @@ class AboutUsScreen extends StatelessWidget {
                     style: AppText.body,
                   ),
                 ),
-                _Card(
-                  title: 'فريق العمل',
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final name in _team)
-                        Chip(
-                          label: Text(name),
-                          backgroundColor: AppColors.sandLight,
-                          side: BorderSide.none,
-                          shape: const StadiumBorder(),
-                        ),
-                    ],
-                  ),
+                const _Card(
+                  title: 'من تطوير',
+                  child: Text('أرين إبراهيم وفاتح', style: AppText.body),
                 ),
                 const _Card(
                   title: 'المصادر',
@@ -114,7 +94,7 @@ class AboutUsScreen extends StatelessWidget {
                     'أعيرف) CC BY-SA 4.0؛ Annurios (توارن) CC BY-SA 4.0؛ cvhail (شعيب جو) و Khalid Alhallabi (جبل '
                     'السمراء) CC BY 3.0؛ Prof. Mortel (جبة، فيد) CC BY 2.0؛ NASA '
                     '(النفود) و Gertrude Bell (قصر برزان 1914) ملكية عامة\n'
-                    'الخطوط: Amiri و Tajawal، رخصة SIL Open Font License',
+                    'الخطوط: Amiri و Tajawal و Reem Kufi، رخصة SIL Open Font License',
                     style: TextStyle(fontSize: 12, height: 1.8, color: AppColors.textSecondary),
                   ),
                 ),
